@@ -1,2 +1,11 @@
 # Starlight-Translate-Instalador
-Instalador Starlight Translate by: Jin Yushiyuu
+
+# Novo instalador Starlight Translate
+
+# Atualizações:
+- Instalador mais otimizado, tanto para nós que desenvolve tanto para os usuários.
+- Agora todos arquivos são deletados ao clicar em desinstalar.
+- Agora não é mais necesário desinstalar uma tradução para atualizar.
+- Uma tradução pode ser atualizada ao clicar em atualizar, desde que os usuários atualize o instalador para nova versão (ao abrir o instalador verifica se tem uma versão nova)
+
+# By: Jin Yushiyuu Starlight Translate

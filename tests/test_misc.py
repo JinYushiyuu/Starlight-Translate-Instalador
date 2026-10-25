@@ -19,6 +19,44 @@ def test_bundled_catalog_parses_and_p5r_has_options_but_one_version():
     assert p4g.available and p4g.required_files == ["p4g.exe", "data.cpk"]
 
 
+def test_individual_translation_manifest_updates_game_version():
+    cat = catalog.load_bundled()
+    game = cat.game("atelier-ryza-1")
+    game.manifest_url = "https://example.invalid/manifest.json"
+    doc = {
+        "schema": 1,
+        "id": "atelier-ryza-1",
+        "name": "Atelier Ryza DX - Tradução PT-BR",
+        "default_version": "v1",
+        "versions": [{
+            "id": "v1", "label": "V1", "version": "1.1.0",
+            "url": "https://example.invalid/traducao.zip",
+            "sha256": "a" * 64, "size": 1234,
+            "notes": "Correções de texto"
+        }]
+    }
+    assert catalog._apply_translation_manifest(game, doc)
+    version = game.default()
+    assert version.version == "1.1.0"
+    assert version.url == "https://example.invalid/traducao.zip"
+    assert version.sha256 == "a" * 64
+    assert version.size == 1234
+
+
+def test_individual_manifest_can_add_a_new_version():
+    game = catalog.load_bundled().game("atelier-ryza-1")
+    doc = {
+        "schema": 1, "id": game.id, "default_version": "v2",
+        "versions": [
+            {"id": "v1", "label": "V1", "version": "1.0", "url": "https://example.invalid/v1.zip"},
+            {"id": "v2", "label": "V2", "version": "2.0", "url": "https://example.invalid/v2.zip"}
+        ]
+    }
+    assert catalog._apply_translation_manifest(game, doc)
+    assert game.default_version == "v2"
+    assert game.version_by_id("v2").version == "2.0"
+
+
 def test_catalog_rejects_newer_schema():
     with pytest.raises(ValueError):
         catalog.parse({"schema": 99, "games": []})

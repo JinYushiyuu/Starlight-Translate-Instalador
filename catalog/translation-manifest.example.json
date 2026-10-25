@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "atelier-ryza-1",
+  "name": "Atelier Ryza DX - Tradução PT-BR",
+  "updated": "2026-10-25",
+  "default_version": "v1",
+  "versions": [
+    {
+      "id": "v1",
+      "label": "V1",
+      "version": "1.0",
+      "url": "https://github.com/SEU-USUARIO/SEU-REPOSITORIO/releases/download/v1.0/traducao.zip",
+      "sha256": "",
+      "size": 0,
+      "notes": ""
+    }
+  ]
+}

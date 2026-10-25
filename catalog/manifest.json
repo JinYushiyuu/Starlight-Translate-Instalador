@@ -14,8 +14,8 @@
         -80
       ],
       "status": {
-         "label": "Em Revisão",
-         "color": "#a78bfa"
+        "label": "Em Revisão",
+        "color": "#a78bfa"
       },
       "progress": {
         "translated": 1.0,
@@ -60,7 +60,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-ryza-2",
@@ -94,7 +95,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-ryza-3",
@@ -128,7 +130,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-sophie-dx",
@@ -162,7 +165,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-sophie-2",
@@ -196,7 +200,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-yumia",
@@ -230,7 +235,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-marie-remake",
@@ -264,7 +270,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "atelier-resleriana",
@@ -298,7 +305,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "trails-in-the-sky-1st-chapter",
@@ -332,7 +340,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "blue-reflection-quartet",
@@ -366,7 +375,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "persona-5-royal",
@@ -433,7 +443,8 @@
           "version": "1.0",
           "note": "*Marcar isso troca uma música do jogo por uma versão em português feita pelo Anselmo Koch. A música adiciona profundidade à batalha, a decisão é sua."
         }
-      ]
+      ],
+      "manifest_url": ""
     },
     {
       "id": "persona-4-golden",
@@ -492,7 +503,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "kingdom-hearts-3",
@@ -526,7 +538,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     },
     {
       "id": "kingdom-hearts-0-2",
@@ -560,7 +573,8 @@
           "notes": ""
         }
       ],
-      "default_version": "v1"
+      "default_version": "v1",
+      "manifest_url": ""
     }
   ]
 }

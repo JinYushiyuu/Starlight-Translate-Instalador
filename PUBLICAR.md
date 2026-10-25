@@ -4,9 +4,8 @@ O GitHub compila os programas de Windows e Linux de graça. Você só usa o nave
 
 ## Uma vez só
 1. Crie uma conta em github.com e um repositório **público** chamado `Starlight-Translate-Instalador`.
-2. Edite `starlight/app_config.py` e troque `SEU-USUARIO` pelo seu usuário (em `CATALOG_URL` e `INSTALLER_REPO`).
+2. Confira `starlight/app_config.py`; `INSTALLER_REPO` deve apontar para `JinYushiyuu/Starlight-Translate-Instalador`. Cada jogo recebe o endereço do seu manifesto individual no campo `manifest_url` de `catalog/manifest.json`.
 3. Suba todos os arquivos desta pasta no repositório (botão **Add file → Upload files**, arrastando tudo; ou use o **GitHub Desktop**, que é visual).
-4. Crie um segundo repositório público `Starlight-Translate-Catalogo` e suba nele só o arquivo `catalog/manifest.json` (na raiz, com o nome `manifest.json`).
 
 ## Lançar o instalador (primeira vez e a cada versão nova)
 1. Em `starlight/__init__.py`, ajuste `__version__` (ex.: `"2.0.0"`).
@@ -19,7 +18,7 @@ O GitHub compila os programas de Windows e Linux de graça. Você só usa o nave
 Quem já usa o instalador recebe a versão nova automaticamente.
 
 ## Lançar/atualizar uma tradução (não precisa de Release do instalador)
-Edite `manifest.json` no repositório do catálogo (ícone de lápis no GitHub): mude `version`, `url` (e `sha256`/`size`, veja `tools/hash_zip.py`) e salve. Os usuários veem "⬆ Atualizar".
+Edite o `manifest.json` no repositório da própria tradução: atualize o objeto correspondente dentro de `versions` (campos `version`, `url`, `sha256` e `size`, veja `tools/hash_zip.py`) e salve. Os usuários veem "⬆ Atualizar" ao abrir o instalador. O endereço raw desse manifesto precisa estar configurado uma vez no campo `manifest_url` do jogo em `catalog/manifest.json`.
 
 ## Se o Actions falhar
 Abra a aba **Actions**, clique na execução vermelha e me mande o texto do erro.

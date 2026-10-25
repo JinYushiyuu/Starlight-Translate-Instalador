@@ -1,87 +1,61 @@
-# Starlight Translate Instalador (Windows + Linux)
+# ✨ Starlight Translate Instalador (Windows + Linux)
 
-- **Usuários comuns:** leiam `USUARIO.md` (baixar e dar dois cliques; sem comandos).
-- **Publicar sem terminal:** `PUBLICAR.md`.
-- O restante deste arquivo é para desenvolvimento.
+**Desenvolvido por: Jin Yushiyuu**
 
-Instalador de traduções reformado: um único código para os dois sistemas, lista de jogos
-vinda do GitHub (sem recompilar), atualização automática, desinstalação limpa e seletor
-de versões (ex.: Persona 5 Royal V1 / V2 / V3).
+Bem-vindo ao Starlight Translate! 💜
 
-## 1) Configurar (uma vez)
+Este instalador foi criado para facilitar a instalação e a atualização das traduções, sem que você precise substituir arquivos manualmente.
 
-Edite `starlight/app_config.py`:
+## ✨ Novidades
 
-| Constante | O que colocar |
-|---|---|
-| `CATALOG_URL` | link **raw** do `manifest.json` no repositório das traduções |
-| `INSTALLER_REPO` | `usuario/repositorio` do instalador (para ele se atualizar) |
+- **Atualizações automáticas:** ao abrir o instalador, ele verifica se existem atualizações disponíveis para as traduções.
+- **Atualize sem desinstalar:** não é mais necessário remover uma tradução antes de instalar uma versão nova.
+- **Desinstalação segura:** os arquivos originais do jogo são restaurados quando a tradução é removida.
+- **Escolha de versões:** quando disponíveis, você pode escolher entre diferentes versões de uma tradução, como V1, V2 e V3.
+- **Opções extras:** algumas traduções podem oferecer conteúdos opcionais para personalizar sua experiência.
+- **Windows e Linux:** o instalador oferece suporte aos dois sistemas.
 
-Sugestão de dois repositórios:
-- **Starlight-Translate-Catalogo**: contém só o `manifest.json` (copie de `catalog/manifest.json`).
-- **Starlight-Translate-Instalador**: este projeto. Os `.zip` das traduções podem ficar em Releases de qualquer repositório (ou Drive, como hoje).
+## 🎮 Como usar
 
-## 2) Lançar/atualizar uma tradução (sem mexer no instalador)
+1. Baixe o instalador correspondente ao seu sistema operacional.
+2. Abra o programa.
+3. Escolha o jogo desejado na lista.
+4. Selecione a versão ou as opções disponíveis, quando houver.
+5. Clique para instalar a tradução e siga as instruções exibidas.
 
-1. Suba o `.zip` (Release do GitHub é o ideal).
-2. `python tools/hash_zip.py Pacote.zip --id v2 --label V2 --version 2.1 --url <link do zip>`
-3. Cole o trecho gerado na lista `versions` do jogo em `manifest.json` e faça commit.
+Pronto! Agora é só aproveitar o jogo traduzido.
 
-Quem já tem a tradução instalada vê **⬆ Atualizar** na próxima vez que abrir o instalador
-(o que dispara a atualização é a mudança do campo `version`). O `sha256` garante que o arquivo baixado não está corrompido.
+## 🔄 Como atualizar uma tradução
 
-Persona 5 Royal já está no catálogo com V1/V2/V3 (sem links ainda). Preencha `url`, `version`, `notes`,
-confirme o `required_files` (`P5R.exe`) e coloque `img/icons/P5R.jpg` e `img/banner/P5R.jpg`
-(ou use URLs `https://` no `icon`/`banner`).
+Ao abrir o instalador, ele verifica se há atualizações disponíveis.
 
+Quando uma nova versão estiver disponível, você poderá selecionar a opção **Atualizar**. Não é necessário desinstalar a versão anterior primeiro.
 
-## Opções da tradução (menu suspenso e caixa de marcar)
+## 🗑️ Como desinstalar uma tradução
 
-Cada opção escolhida pode trazer um `.zip` extra, aplicado por cima da tradução base na mesma instalação
-(se dois pacotes tiverem o mesmo arquivo, vale o último; o original do jogo é sempre o que fica no backup).
-Trocar uma opção depois mostra o botão **APLICAR OPÇÕES**, que refaz a instalação sozinho.
+Selecione o jogo no instalador e utilize a opção de desinstalação.
 
-No `manifest.json`, dentro do jogo (vale para todas as versões) ou dentro de uma versão (só para ela):
+O programa cuidará da remoção dos arquivos da tradução e da restauração dos arquivos originais que foram substituídos.
 
-```json
-"options": [
-  { "id": "codenames", "type": "choice", "label": "Codinomes", "default": "official",
-    "choices": [
-      { "id": "official", "label": "Codinomes Oficiais" },
-      { "id": "classic",  "label": "Codinomes Clássicos", "url": "https://.../classicos.zip", "sha256": "", "size": 0, "version": "1.0" }
-    ] },
-  { "id": "pt_music", "type": "checkbox", "label": "Música Importante em Português*", "default": false,
-    "url": "https://.../musica.zip", "sha256": "", "size": 0, "version": "1.0",
-    "note": "*Texto explicativo que aparece abaixo da caixa." }
-]
+## 🐧 Linux — permissão de execução
+
+Se estiver usando Linux e o instalador não abrir por falta de permissão, entre na pasta onde o arquivo foi baixado e execute:
+
+```bash
+chmod +x Starlight-Translate-Instalador-linux-x86_64
 ```
-- Escolha **sem** `url` (como "Oficiais") = só a tradução base, nada extra para baixar.
-- Escolha com a chave `url` **vazia** = pacote ainda não enviado; aparece "(em breve)" e o botão fica bloqueado.
-- Para republicar um pacote de opção, aumente o `version` dele: quem usa a opção vê **⬆ Atualizar**.
 
-## 3) Lançar uma versão nova do instalador
+Depois, abra o instalador novamente.
 
-1. Aumente `__version__` em `starlight/__init__.py`.
-2. `git tag v2.1.0 && git push --tags`: o GitHub Actions roda os testes, compila Windows e Linux e anexa ao Release.
-3. Instaladores antigos mostram "Nova versão disponível" e trocam o próprio executável.
+Dependendo da distribuição Linux, pode ser necessário instalar dependências adicionais do Qt.
 
-## 4) Rodar / compilar localmente
+## 💜 Sobre o projeto
 
-```
-pip install -r requirements-dev.txt
-python main.py                  # executar
-python -m pytest                # testes (use QT_QPA_PLATFORM=offscreen sem monitor)
-pyinstaller --noconfirm starlight.spec   # gera dist/ do seu sistema
-```
-Linux: o Qt precisa de `libxcb-cursor0` (Debian/Ubuntu) ou `xcb-util-cursor` (Arch/SteamOS).
+O Starlight Translate é um projeto dedicado a tornar os jogos mais acessíveis para a comunidade brasileira por meio de traduções.
 
-## Como a instalação funciona
-- Arquivos originais que a tradução substitui são **movidos** para `Starlight_Backup/` (instantâneo, sem duplicar GBs); arquivos novos são anotados em `install.json`.
-- Falhou no meio? Tudo é desfeito sozinho. Desinstalar restaura os originais e apaga o que foi adicionado.
-- Se a Steam atualizou um arquivo depois da instalação, a desinstalação **não** o sobrescreve com backup antigo.
-- Traduções feitas pelo instalador antigo (`Starlight_Backup` sem `install.json`) são reconhecidas e removidas corretamente.
-- Linux: nomes de arquivo são casados sem diferenciar maiúsculas (Windows/Proton), a Steam é achada em `~/.steam`, `~/.local/share/Steam`, Flatpak e Snap, e em todas as bibliotecas extras.
+Agradecemos a todos que acompanham, apoiam e ajudam a divulgar o projeto!
 
-## Abrir no VS Code
-Abra a pasta, crie o ambiente (`python3 -m venv .venv`, ative, `pip install -r requirements-dev.txt`), escolha o interpretador `.venv`
-(Ctrl+Shift+P → *Python: Select Interpreter*) e use F5: **Instalador (abrir)** ou **Testes**.
+**Bom jogo, pessoal! ✨**
+
+— Starlight Translate
+

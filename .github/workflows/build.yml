@@ -1,0 +1,62 @@
+name: Build
+
+# - Em todo push/PR: roda os testes e gera os executáveis (aba Actions > Artifacts).
+# - Ao criar uma tag "v2.1.0": gera os executáveis e anexa no Release automaticamente.
+#   (os instaladores já instalados detectam esse Release e se atualizam sozinhos)
+permissions:
+  contents: write   # necessário para anexar os arquivos ao Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            asset: Starlight-Translate-Instalador-windows-x64.exe
+          - os: ubuntu-22.04   # glibc antigo = roda em mais distros (inclui SteamOS)
+            asset: Starlight-Translate-Instalador-linux-x86_64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependências do Qt (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0
+      - run: pip install -r requirements-dev.txt
+      - name: Testes
+        run: python -m pytest -q
+        env:
+          QT_QPA_PLATFORM: offscreen
+      - name: Verifica a versão da tag (se for release)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: python
+        run: |
+          import os, re, sys
+          tag = os.environ["GITHUB_REF_NAME"].lstrip("v")
+          ver = re.search(r'__version__ = "([^"]+)"', open("starlight/__init__.py").read()).group(1)
+          sys.exit(0 if tag == ver else f"Tag {tag} difere de starlight/__init__.py ({ver}). Atualize antes de publicar.")
+      - run: pyinstaller --noconfirm starlight.spec
+      - name: Marca como executável (Linux)
+        if: runner.os == 'Linux'
+        run: chmod +x dist/${{ matrix.asset }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: dist/${{ matrix.asset }}
+      - name: Anexa ao Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.asset }}
+          generate_release_notes: true

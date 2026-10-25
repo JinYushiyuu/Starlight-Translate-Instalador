@@ -1,0 +1,7 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "name": "Instalador (abrir)", "type": "debugpy", "request": "launch", "program": "${workspaceFolder}/main.py", "console": "integratedTerminal" },
+    { "name": "Testes", "type": "debugpy", "request": "launch", "module": "pytest", "args": ["-q"], "env": { "QT_QPA_PLATFORM": "offscreen" }, "console": "integratedTerminal" }
+  ]
+}

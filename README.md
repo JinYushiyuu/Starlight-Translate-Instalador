@@ -1,95 +1,60 @@
-# Starlight Translate Instalador
+# ✨ Starlight Translate Instalador (Windows + Linux)
 
-Instale, atualize e remova traduções da Starlight Translate de forma simples, com suporte para **Windows e Linux**.
+**Desenvolvido por: Jin Yushiyuu**
 
-## 📥 Como baixar
+Bem-vindo ao Starlight Translate! 💜
 
-1. Acesse a página de [Releases](https://github.com/JinYushiyuu/Starlight-Translate-Instalador/releases).
-2. Baixe o arquivo correspondente ao seu sistema operacional:
-   - **Windows:** `Starlight-Translate-Instalador-windows-x64.exe`
-   - **Linux:** `Starlight-Translate-Instalador-linux-x86_64`
+Este instalador foi criado para facilitar a instalação e a atualização das traduções, sem que você precise substituir arquivos manualmente.
 
-## 🚀 Como executar
+## ✨ Novidades
 
-### Windows
+- **Atualizações automáticas:** ao abrir o instalador, ele verifica se existem atualizações disponíveis para as traduções.
+- **Atualize sem desinstalar:** não é mais necessário remover uma tradução antes de instalar uma versão nova.
+- **Desinstalação segura:** os arquivos originais do jogo são restaurados quando a tradução é removida.
+- **Escolha de versões:** quando disponíveis, você pode escolher entre diferentes versões de uma tradução, como V1, V2 e V3.
+- **Opções extras:** algumas traduções podem oferecer conteúdos opcionais para personalizar sua experiência.
+- **Windows e Linux:** o instalador oferece suporte aos dois sistemas.
 
-1. Baixe o arquivo `.exe`.
-2. Dê dois cliques para abrir o instalador.
-3. Se o Windows exibir um aviso de segurança, confira se baixou o arquivo do repositório oficial antes de decidir como prosseguir.
+## 🎮 Como usar
 
-### Linux
+1. Baixe o instalador correspondente ao seu sistema operacional.
+2. Abra o programa.
+3. Escolha o jogo desejado na lista.
+4. Selecione a versão ou as opções disponíveis, quando houver.
+5. Clique para instalar a tradução e siga as instruções exibidas.
 
-1. Baixe o executável para Linux.
-2. Nas propriedades do arquivo, habilite a opção **Permitir executar como programa** ou equivalente no seu ambiente.
-3. Dê dois cliques para abrir o instalador.
-
-Se o aplicativo não abrir, consulte a seção de solução de problemas abaixo.
-
-## 🎮 Como instalar uma tradução
-
-1. Abra o Starlight Translate Instalador.
-2. Escolha o jogo desejado na lista.
-3. Selecione a versão da tradução disponível, quando houver mais de uma.
-4. Confira as opções adicionais oferecidas para o jogo.
-5. Clique no botão de instalação e aguarde a conclusão.
-
-O instalador verifica os arquivos necessários para identificar a instalação do jogo. Dependendo do título, pode ser necessário ter o jogo instalado pela Steam.
+Pronto! Agora é só aproveitar o jogo traduzido.
 
 ## 🔄 Como atualizar uma tradução
 
-Quando houver uma versão mais recente da tradução instalada, o aplicativo poderá exibir o botão **⬆ Atualizar**.
+Ao abrir o instalador, ele verifica se há atualizações disponíveis.
 
-Clique nele e aguarde o processo terminar. Mantenha o instalador aberto durante a atualização.
-
-O catálogo de traduções é atualizado pela internet, portanto, novos jogos e versões podem aparecer sem que você precise baixar novamente o instalador.
-
-## ⚙️ Opções adicionais
-
-Algumas traduções oferecem opções extras, como alternativas de nomenclatura ou pacotes de áudio.
-
-- Escolha as opções desejadas antes de instalar.
-- Algumas opções podem estar marcadas como **em breve** quando ainda não há um pacote disponível.
-- Se você mudar as opções depois da instalação, use o botão **APLICAR OPÇÕES**, quando disponível.
-
-As opções disponíveis variam de acordo com o jogo e a tradução.
+Quando uma nova versão estiver disponível, você poderá selecionar a opção **Atualizar**. Não é necessário desinstalar a versão anterior primeiro.
 
 ## 🗑️ Como desinstalar uma tradução
 
-Use a opção de desinstalação disponibilizada pelo aplicativo.
+Selecione o jogo no instalador e utilize a opção de desinstalação.
 
-O instalador mantém um registro dos arquivos modificados para restaurar os arquivos originais do jogo e remover os arquivos adicionados pela tradução.
+O programa cuidará da remoção dos arquivos da tradução e da restauração dos arquivos originais que foram substituídos.
 
-Se a Steam atualizar arquivos do jogo após a instalação da tradução, o instalador evita substituir alterações mais recentes por cópias antigas do backup.
+## 🐧 Linux — permissão de execução
 
-**Recomendação:** não apague manualmente a pasta `Starlight_Backup` enquanto uma tradução estiver instalada.
+Se estiver usando Linux e o instalador não abrir por falta de permissão, entre na pasta onde o arquivo foi baixado e execute:
 
-## ❓ Solução de problemas
+```bash
+chmod +x Starlight-Translate-Instalador-linux-x86_64
+```
 
-### O jogo não aparece na lista
+Depois, abra o instalador novamente.
 
-- Confira se o jogo está instalado.
-- Verifique se a tradução já está disponível no catálogo.
-- Abra o instalador novamente com acesso à internet para carregar as informações atualizadas.
-
-### O instalador não abre no Linux
-
-Confira se o arquivo possui permissão de execução. Algumas distribuições também podem precisar de bibliotecas do sistema relacionadas ao Qt.
-
-### A instalação ou atualização falhou
-
-- Não feche o aplicativo enquanto ele estiver processando os arquivos.
-- Confira se o jogo não está aberto.
-- Verifique se você possui permissão para modificar a pasta do jogo.
-- Tente novamente após confirmar que os arquivos do jogo estão acessíveis.
-
-### Preciso baixar o instalador novamente para receber novas traduções?
-
-Não necessariamente. O catálogo é consultado pela internet e pode receber novos jogos e versões independentemente de uma nova compilação do aplicativo.
+Dependendo da distribuição Linux, pode ser necessário instalar dependências adicionais do Qt.
 
 ## 💜 Sobre o projeto
 
-O **Starlight Translate Instalador** foi desenvolvido para facilitar a instalação e o gerenciamento das traduções da comunidade Starlight Translate.
+O Starlight Translate é um projeto dedicado a tornar os jogos mais acessíveis para a comunidade brasileira por meio de traduções.
 
-O objetivo é tornar o acesso às traduções mais simples, oferecendo suporte a Windows e Linux, atualização de versões e remoção organizada dos arquivos instalados.
+Agradecemos a todos que acompanham, apoiam e ajudam a divulgar o projeto!
 
-Para baixar o aplicativo, acesse a página oficial de [Releases no GitHub](https://github.com/JinYushiyuu/Starlight-Translate-Instalador/releases).
+**Bom jogo, pessoal! ✨**
+
+— Starlight Translate

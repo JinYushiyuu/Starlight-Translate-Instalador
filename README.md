@@ -1,5 +1,3 @@
-# Starlight-Translate-Instalador
-
 # Novo instalador Starlight Translate
 
 # Atualizações:

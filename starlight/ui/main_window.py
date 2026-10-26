@@ -724,7 +724,13 @@ class MainWindow(QWidget):
 
     def _load_project_gallery(self, game: Game) -> None:
         """Busca as imagens do projeto sem bloquear a interface."""
-        slug = getattr(game, "website_slug", "")
+        slug = str(getattr(game, "website_slug", "") or "").strip()
+        # O catálogo remoto pode ainda não ter website_slug. Use o vínculo
+        # conhecido pelo ID do jogo para que a galeria continue funcionando.
+        if not slug:
+            slug = {
+                "atelier-ryza-1": "atelier-ryza-ever-darkness-the-secret-hideout-dx",
+            }.get(game.id, "")
         self._gallery_game_id = game.id
         self._clear_gallery()
 

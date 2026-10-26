@@ -332,12 +332,12 @@
       ],
       "versions": [
         {
-          "id": "v1",
-          "label": "V1",
           "version": "1.0",
-          "url": "https://github.com/StarlightTranslate/Traisl-in-the-Sky-1-PT-BR-Download/releases/download/0.5/Trails.in.the.Sky.1.PTBR.zip",
+          "github": "StarlightTranslate/Traisl-in-the-Sky-1-PT-BR-Download",
+          "github_asset": "Trails.in.the.Sky.1.PTBR.zip",
+          "url": "",
           "sha256": "",
-          "size": 30.7,
+          "size": 0,
           "notes": ""
         }
       ],

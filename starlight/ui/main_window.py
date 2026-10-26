@@ -1,6 +1,8 @@
 """Janela principal do instalador."""
 from __future__ import annotations
 
+import re
+
 import threading
 from pathlib import Path
 from typing import Optional
@@ -63,6 +65,20 @@ def compute_action(
     if any(not c.available for _, c in catalog.selected_choices(opts, chosen)):
         return "none", "OPÇÃO AINDA INDISPONÍVEL"
     return kind, text
+
+
+def _vtxt(version: str) -> str:
+    """"1.2" -> "v1.2"; tags que não são números (ex.: "31/05/2026") ficam como estão."""
+    return f"v{version}" if re.fullmatch(r"\d+(\.\d+)*", str(version)) else str(version)
+
+
+def translation_version_text(v: Optional[Version], rec: Optional[dict] = None) -> str:
+    """Texto pequeno sob o botão principal. A versão vem da Release do GitHub (tag)."""
+    if v is None or not v.version:
+        return ""
+    if rec and rec.get("version_id") == v.id and rec.get("version") and rec.get("version") != v.version:
+        return f"Tradução instalada: {_vtxt(rec['version'])}  ·  disponível: {_vtxt(v.version)}"
+    return f"Versão da tradução: {_vtxt(v.version)}"
 
 
 def _safe(text: str) -> str:
@@ -533,9 +549,16 @@ class MainWindow(QWidget):
         b = self.banner
         b.tag.setStyleSheet("background: #e74c3c; color: white; font-size: 12px; font-weight: 700; border-radius: 12px; padding: 5px 12px;")
 
-        al = QHBoxLayout(b.actions)
+        outer = QVBoxLayout(b.actions)  # botões em cima, versão da tradução (pequena) embaixo
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(5)
+        al = QHBoxLayout()
         al.setContentsMargins(0, 0, 0, 0)
         al.setSpacing(8)
+        outer.addLayout(al)
+        self.lbl_tver = QLabel("")
+        self.lbl_tver.setStyleSheet(f"color: {style.SOFT}; font-size: 11px; background: transparent;")
+        outer.addWidget(self.lbl_tver)
         self.btn_main = QPushButton("INSTALAR")
         self.btn_main.setFixedSize(230, 45)
         self.btn_main.clicked.connect(self._on_main_click)
@@ -913,6 +936,8 @@ class MainWindow(QWidget):
         role = {"install": "primary", "installed": "", "update": "orange", "switch": "blue", "options": "blue"}.get(kind, "")
         style.style_button(self.btn_main, role)
         self.btn_main.setEnabled(kind in ("install", "update", "switch", "options") and not self._busy)
+        self.lbl_tver.setText(translation_version_text(v, rec))
+        self.lbl_tver.setVisible(bool(self.lbl_tver.text()))
         self.btn_remove.setVisible(rec is not None)
         self.btn_remove.setEnabled(not self._busy)
         self.btn_redo.setVisible(rec is not None and kind == "installed")

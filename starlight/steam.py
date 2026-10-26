@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import threading
+import unicodedata
 from collections import deque
 from pathlib import Path
 from typing import Callable, Iterable, Optional
@@ -23,6 +24,43 @@ IGNORED_DIRS = {
     # Linux
     "proc", "sys", "dev", "run", "boot", "lost+found", "node_modules", "__pycache__",
 }
+
+
+_STOPWORDS = {"the", "of", "in", "a", "an", "and", "to", "for", "with"}
+
+
+def _tokens(text: str) -> set[str]:
+    plain = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode().lower()
+    return {t for t in re.findall(r"[a-z0-9]+", plain) if t not in _STOPWORDS}
+
+
+def needs_name_check(required: Iterable[str]) -> bool:
+    """True quando `required_files` só tem curingas (ex.: "*.exe").
+
+    Um curinga sozinho serve para QUALQUER jogo que tenha um .exe, então, nesse caso,
+    o nome da pasta também precisa combinar com o jogo.
+    """
+    required = [r for r in required if r]
+    return bool(required) and all("*" in r or "?" in r for r in required)
+
+
+def folder_matches_game(folder_name: str, game_name: str = "", hints: Iterable[str] = ()) -> bool:
+    """O nome da pasta é compatível com o jogo do catálogo?
+
+    - `hints` (campo `steam_folders` do catálogo): se houver, vale só "o nome da pasta contém algum deles".
+    - Sem hints: as palavras da pasta e as do nome do jogo precisam estar contidas uma na outra
+      (ignorando "the", "of"...), com pelo menos 2 em comum. Números contam: "Ryza 2" != "Ryza".
+    """
+    hints = [h.strip().lower() for h in hints if h and h.strip()]
+    if hints:
+        low = folder_name.lower()
+        return any(h in low for h in hints)
+    folder, game = _tokens(folder_name), _tokens(game_name)
+    if not folder or not game:
+        return False
+    if len(folder & game) < min(2, len(game)):
+        return False
+    return folder <= game or game <= folder
 
 
 def steam_roots() -> list[Path]:
@@ -92,11 +130,22 @@ def library_common_dirs(roots: Optional[Iterable[Path]] = None) -> list[Path]:
     return result
 
 
-def find_in_steam(required: list[str], roots: Optional[Iterable[Path]] = None) -> Optional[Path]:
+def find_in_steam(
+    required: list[str],
+    roots: Optional[Iterable[Path]] = None,
+    name: str = "",
+    hints: Iterable[str] = (),
+) -> Optional[Path]:
+    check = needs_name_check(required)
+    hints = list(hints)
     for common in library_common_dirs(roots):
         try:
             for entry in os.scandir(common):
-                if entry.is_dir() and all_requirements_met(Path(entry.path), required):
+                if not entry.is_dir():
+                    continue
+                if check and not folder_matches_game(entry.name, name, hints):
+                    continue
+                if all_requirements_met(Path(entry.path), required):
                     return Path(entry.path)
         except OSError:
             continue
@@ -142,10 +191,14 @@ def scan(
     progress: Optional[Callable[[str], None]] = None,
     cancel: Optional[threading.Event] = None,
     max_depth: int = 6,
+    name: str = "",
+    hints: Iterable[str] = (),
 ) -> Optional[Path]:
     required = [r for r in required if r]
     if not required:
         return None
+    check = needs_name_check(required)
+    hints = list(hints)
     for root in roots if roots is not None else scan_roots():
         queue: deque[tuple[Path, int]] = deque([(Path(root), 0)])
         while queue:
@@ -160,7 +213,9 @@ def scan(
             except OSError:
                 continue
             names = [e.name for e in entries]
-            if all_requirements_met(cur, required, names):
+            if all_requirements_met(cur, required, names) and (
+                not check or folder_matches_game(cur.name, name, hints)
+            ):
                 return cur
             if depth >= max_depth:
                 continue
@@ -181,5 +236,9 @@ def find_game(
     required: list[str],
     progress: Optional[Callable[[str], None]] = None,
     cancel: Optional[threading.Event] = None,
+    name: str = "",
+    hints: Iterable[str] = (),
 ) -> Optional[Path]:
-    return find_in_steam(required) or scan(required, progress=progress, cancel=cancel)
+    return find_in_steam(required, name=name, hints=hints) or scan(
+        required, progress=progress, cancel=cancel, name=name, hints=hints
+    )

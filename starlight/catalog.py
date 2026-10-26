@@ -87,6 +87,7 @@ class Game:
     credits_tools: list[str] = field(default_factory=list)
     credits_thanks: list[str] = field(default_factory=list)
     required_files: list[str] = field(default_factory=list)
+    steam_folders: list[str] = field(default_factory=list)  # trechos do nome da pasta na Steam (opcional)
     versions: list[Version] = field(default_factory=list)
     default_version: str = ""
     options: list[Option] = field(default_factory=list)
@@ -239,6 +240,7 @@ def parse(data: dict, source: str = "bundled") -> Catalog:
                 credits_tools=list(cr.get("tools") or []),
                 credits_thanks=list(cr.get("thanks") or []),
                 required_files=list(g.get("required_files") or []),
+                steam_folders=[str(x) for x in (g.get("steam_folders") or []) if str(x).strip()],
                 versions=vers,
                 default_version=str(g.get("default_version") or ""),
                 options=_parse_options(g.get("options")),

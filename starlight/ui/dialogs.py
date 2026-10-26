@@ -113,13 +113,16 @@ class FindGameDialog(QDialog):
             m.setStyleSheet("color: #f1c40f; font-weight: 700;")
         self.lbl_path.setText("Procurando nas bibliotecas da Steam...")
         req = self.game.required_files
+        name, hints = self.game.name, self.game.steam_folders
 
         def work(emit):
-            found = steam.find_in_steam(req)
+            found = steam.find_in_steam(req, name=name, hints=hints)
             if found:
                 return found
             emit("Vasculhando os discos...")
-            return steam.scan(req, progress=lambda p: emit(f"Vasculhando: {p}"), cancel=self._cancel)
+            return steam.scan(
+                req, progress=lambda p: emit(f"Vasculhando: {p}"), cancel=self._cancel, name=name, hints=hints
+            )
 
         def done(found):
             self._busy = False

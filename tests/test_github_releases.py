@@ -36,6 +36,9 @@ def limpa_cache(tmp_path, monkeypatch):
 
 def game_com_github(repo="o/r", asset=""):
     cat = catalog.load_bundled()
+    for other in cat.games:  # isola: só o jogo do teste usa github (o catálogo real já tem outros)
+        for ov in other.versions:
+            ov.github = ov.github_asset = ""
     g = cat.game("atelier-ryza-1")
     v = g.default()
     v.github, v.github_asset = repo, asset

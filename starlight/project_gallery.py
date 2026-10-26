@@ -4,13 +4,30 @@ import ast
 import json
 import re
 from urllib.error import HTTPError, URLError
-from urllib.parse import urljoin
+from urllib.parse import quote, urljoin
 from urllib.request import Request, urlopen
 
 
 SITE_BASE = "https://starlight-translate.com.br/"
 DATA_JS_URL = urljoin(SITE_BASE, "js/dados.js")
 TIMEOUT = 10
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) Starlight-Translate-Instalador/2.0"
+)
+IMAGE_KEYS = ("imagens", "images", "screenshots", "capturas")
+
+# Motivo da última falha de get_project(), para a interface mostrar ao usuário.
+LAST_ERROR = ""
+
+
+def _key_pattern(name: str) -> str:
+    """Chave JS com ou sem aspas: slug: / "slug": / 'slug':"""
+    return rf"""(?<![\w$])["']?{re.escape(name)}["']?\s*:\s*"""
+
+
+def safe_url(url: str) -> str:
+    """Escapa espaços/acentos sem duplicar o que já está escapado."""
+    return quote(url, safe=":/?&=%#+@,;~!$'()*[]")
 
 
 def _download_data() -> str | None:
@@ -18,15 +35,19 @@ def _download_data() -> str | None:
     request = Request(
         DATA_JS_URL,
         headers={
-            "User-Agent": "Starlight-Translate-Instalador/2.0",
+            "User-Agent": USER_AGENT,
             "Accept": "text/javascript, application/javascript, */*",
         },
     )
+    global LAST_ERROR
     try:
         with urlopen(request, timeout=TIMEOUT) as response:
             return response.read().decode("utf-8-sig")
-    except (HTTPError, URLError, TimeoutError, OSError, UnicodeError):
-        return None
+    except HTTPError as exc:
+        LAST_ERROR = f"o site respondeu HTTP {exc.code} ao baixar dados.js"
+    except (URLError, TimeoutError, OSError, UnicodeError) as exc:
+        LAST_ERROR = f"não consegui baixar dados.js ({exc})"
+    return None
 
 
 def _decode_js_string(value: str) -> str | None:
@@ -97,7 +118,7 @@ def _find_matching(source: str, start: int, opening: str, closing: str) -> int:
 
 def _extract_string_property(source: str, name: str) -> str:
     """Lê uma propriedade textual simples, como title ou youtubeUrl."""
-    match = re.search(rf"\b{re.escape(name)}\s*:\s*", source)
+    match = re.search(_key_pattern(name), source)
     if not match:
         return ""
     start = match.end()
@@ -121,7 +142,11 @@ def _extract_string_property(source: str, name: str) -> str:
 
 def _extract_images(source: str) -> list[str]:
     """Lê a lista de imagens da propriedade imagens."""
-    match = re.search(r"\bimagens\s*:\s*\[", source)
+    match = None
+    for key in IMAGE_KEYS:
+        match = re.search(_key_pattern(key) + r"\[", source)
+        if match:
+            break
     if not match:
         return []
     start = source.find("[", match.start())
@@ -155,30 +180,43 @@ def _extract_images(source: str) -> list[str]:
 
 
 def get_project(slug: str) -> dict | None:
-    """Retorna título, imagens e trailer de um projeto pelo slug."""
+    """Retorna título, imagens e trailer de um projeto pelo slug.
+
+    Em caso de falha devolve None e deixa o motivo em LAST_ERROR.
+    """
+    global LAST_ERROR
+    LAST_ERROR = ""
     if not isinstance(slug, str) or not slug.strip():
+        LAST_ERROR = "o jogo não tem website_slug"
         return None
     source = _download_data()
     if not source:
+        LAST_ERROR = LAST_ERROR or "dados.js veio vazio"
         return None
-    slug_pattern = re.compile(r"\bslug\s*:\s*(['\"])" + re.escape(slug) + r"\1")
+    slug_pattern = re.compile(_key_pattern("slug") + r"(['\"])" + re.escape(slug) + r"\1")
     match = slug_pattern.search(source)
     if not match:
+        LAST_ERROR = f"o slug '{slug}' não existe no dados.js do site"
         return None
     start = source.rfind("{", 0, match.start())
     if start < 0:
+        LAST_ERROR = "não consegui isolar o projeto dentro do dados.js"
         return None
     end = _find_matching(source, start, "{", "}")
     if end < 0:
+        LAST_ERROR = "não consegui isolar o projeto dentro do dados.js"
         return None
     project_source = source[start:end + 1]
     found_slug = _extract_string_property(project_source, "slug")
     if found_slug != slug:
+        LAST_ERROR = "o projeto encontrado tem outro slug"
         return None
     images = _extract_images(project_source)
+    if not images:
+        LAST_ERROR = "o projeto existe no site, mas não tem imagens cadastradas"
     return {
         "slug": found_slug,
         "title": _extract_string_property(project_source, "title"),
-        "images": [urljoin(SITE_BASE, image) for image in images if image.strip()],
+        "images": [safe_url(urljoin(SITE_BASE, image)) for image in images if image.strip()],
         "youtube_url": _extract_string_property(project_source, "youtubeUrl"),
     }

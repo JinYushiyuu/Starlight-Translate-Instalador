@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 from .. import __version__, app_config, catalog, installer, selfupdate, shortcut, state
 from ..catalog import Catalog, Game, Option, Version
 from ..download import Downloader, DownloadCancelled, DownloadError, file_sha256
+from .. import project_gallery
 from ..project_gallery import get_project
 from . import style
 from .dialogs import FindGameDialog, SettingsDialog
@@ -507,6 +508,7 @@ class MainWindow(QWidget):
         self.gallery_status.setStyleSheet(
             f"color: {style.MUTED}; font-size: 11px; border: none;"
         )
+        self.gallery_status.setWordWrap(True)
         gallery_layout.addWidget(self.gallery_status)
         self.gallery_frame.hide()
         self._gallery_game_id = ""
@@ -744,7 +746,8 @@ class MainWindow(QWidget):
         def work(_emit):
             project = get_project(slug)
             if not project:
-                return game.id, []
+                return game.id, [], project_gallery.LAST_ERROR
+            reason = project_gallery.LAST_ERROR
 
             from urllib.request import Request, urlopen
 
@@ -753,26 +756,28 @@ class MainWindow(QWidget):
                 try:
                     request = Request(
                         url,
-                        headers={"User-Agent": "Starlight-Translate-Instalador/2.0"},
+                        headers={"User-Agent": project_gallery.USER_AGENT},
                     )
                     with urlopen(request, timeout=10) as response:
                         data = response.read()
                     if data:
                         downloaded.append((url, data))
-                except (OSError, TimeoutError, ValueError):
+                except Exception as exc:  # noqa: BLE001 - uma imagem ruim não derruba as outras
+                    reason = f"falha ao baixar {url} ({exc})"
                     continue
-            return game.id, downloaded
+            return game.id, downloaded, reason
 
         def done(result):
-            game_id, images = result
+            game_id, images, reason = result
             # A resposta pode chegar depois que outro jogo já foi selecionado.
             if game_id != self._gallery_game_id:
                 return
 
             if not images:
-                self.gallery_status.setText(
-                    "Nenhuma imagem disponível para este projeto."
-                )
+                text = "Nenhuma imagem disponível para este projeto."
+                if reason:
+                    text += f"\n({reason})"
+                self.gallery_status.setText(text)
                 return
 
             shown = 0

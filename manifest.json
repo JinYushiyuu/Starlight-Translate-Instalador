@@ -1,0 +1,567 @@
+{
+  "schema": 1,
+  "updated": "2026-10-24",
+  "min_installer": "2.0.0",
+  "games": [
+    {
+      "id": "atelier-ryza-1",
+      "name": "Atelier Ryza: Ever Darkness & the Secret Hideout DX",
+      "description": "O conceito deste título, o mais recente da série a apresentar um novo mundo \"Atelier\", gira em torno de \"adolescentes que crescem juntos, mesmo que apenas um pouco\".\nÉ a história de uma rapariga e dos seus amigos que estão prestes a entrar na idade adulta e a descobrir o que é mais importante para eles.",
+      "icon": "img/icons/Ryza1.jpg",
+      "banner": "img/banner/Ryza-banner.jpg",
+      "banner_offset": [
+        -150,
+        -80
+      ],
+      "status": {
+        "label": "Em Revisão",
+        "color": "#a78bfa"
+      },
+      "progress": {
+        "translated": 1.0,
+        "reviewed": 0.3
+      },
+      "required_files": [
+        "Atelier_Ryza_DX.exe",
+        "Data/PACK01.PAK",
+        "Data/PACK02.PAK",
+        "Data/PACK00_04_01.PAK"
+      ],
+      "logo": "img/Starlight-logo/logo.png",
+      "credits": {
+        "translation": [
+          "Shiro Ysgarmr",
+          "Alioth",
+          "Jin_Yushiyuu"
+        ],
+        "design": [
+          "Shiro Ysgarmr"
+        ],
+        "tools": [
+          "Jin_Yushiyuu"
+        ],
+        "thanks": [
+          "Linkmadao (Brazil Alliance)",
+          "Lopez",
+          "V.Slynx",
+          "Rasec",
+          "Abu (Phantasie Translate)",
+          "Yami"
+        ]
+      },
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "https://drive.google.com/uc?export=download&id=1hzlCKOl4ixSNPN1OPBgCxFVlyHbv4d77",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1",
+      "website_slug": "atelier-ryza-ever-darkness-the-secret-hideout-dx"
+    },
+    {
+      "id": "atelier-ryza-2",
+      "name": "Atelier Ryza 2: Lost Legends & the Secret Fairy DX",
+      "description": "Esta história decorre três anos antes dos eventos do jogo anterior \"Atelier Ryza: Ever Darkness & the Secret Hideout\", e retrata a reunião de Ryza com os seus amigos, numa aventura entre despedidas e novas amizades em busca de um tesouro de valor incalculável.",
+      "icon": "img/icons/Ryza2.jpg",
+      "banner": "img/banner/Ryza2.jpg",
+      "banner_offset": [
+        0,
+        -10
+      ],
+      "status": {
+        "label": "Em andamento",
+        "color": "#e74c3c"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "atelier-ryza-3",
+      "name": "Atelier Ryza 3: Alchemist of the End & the Secret Key DX",
+      "description": "Tudo começa quando o arquipélago Kark Isles aparece ao lado da terra natal de Ryza, a protagonista. Com receio que seja uma ameaça ao seu lar, Ryza e amigos investigam as ilhas, deparando-se com ruínas e um portão enorme.",
+      "icon": "img/icons/Ryza3.jpg",
+      "banner": "img/banner/Ryza3.jpg",
+      "banner_offset": [
+        0,
+        -50
+      ],
+      "status": {
+        "label": "Em andamento",
+        "color": "#e74c3c"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "atelier-sophie-dx",
+      "name": "Atelier Sophie: The Alchemist of the Mysterious Book DX",
+      "description": "\"Atelier Sophie\", o primeiro da série, regressa na versão DX! Sophie, uma jovem alquimista, cruza-se acidentalmente com um livro vivo chamado Plachta.",
+      "icon": "img/icons/SophieDX.jpg",
+      "banner": "img/banner/SophieDX-Banner.jpg",
+      "banner_offset": [
+        0,
+        80
+      ],
+      "status": {
+        "label": "Em andamento",
+        "color": "#e74c3c"
+      },
+      "progress": {
+        "translated": 10.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "atelier-sophie-2",
+      "name": "Atelier Sophie 2: The Alchemist of the Mysterious Dream",
+      "description": "Uma história peculiar sobre um sonho misterioso... Esta é a história de uma das aventuras que Sophie, a Alquimista, teve após partir da sua terra natal de Kirchen Bell.",
+      "icon": "img/icons/Sophie2.jpg",
+      "banner": "img/banner/Sophie2.jpg",
+      "banner_offset": [
+        0,
+        -50
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "atelier-yumia",
+      "name": "Atelier Yumia: The Alchemist of Memories & the Envisioned Land",
+      "description": "Atelier Yumia é uma história em que Yumia e as suas companhias confrontam memórias e avançam no trilho em que acreditam.",
+      "icon": "img/icons/Yumia.jpg",
+      "banner": "img/banner/Yumia.jpg",
+      "banner_offset": [
+        0,
+        -50
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "atelier-marie-remake",
+      "name": "Atelier Marie Remake: The Alchemist of Salburg",
+      "description": "Não se trata de salvar o mundo. Marie, uma estudante em dificuldades que quer formar-se em alquimia, embarca em aventuras e missões ao mesmo tempo que tenta graduar-se.",
+      "icon": "img/icons/Marie.jpg",
+      "banner": "img/banner/Marie.jpg",
+      "banner_offset": [
+        0,
+        -10
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "atelier-resleriana",
+      "name": "Atelier Resleriana: The Red Alchemist & the White Guardian",
+      "description": "A historia de dois protagonistas que reconstroem a sua cidade natal e procuram uma verdade escondida.",
+      "icon": "img/icons/Resleriana.jpg",
+      "banner": "img/banner/Resleriana.jpg",
+      "banner_offset": [
+        0,
+        -30
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "trails-in-the-sky-1st-chapter",
+      "name": "Trails in the Sky 1st Chapter",
+      "description": "Trails in the Sky 1º Capítulo reimagina o primeiro capítulo de uma série amada, adicionando visuais aprimorados e jogabilidade refinada.",
+      "icon": "img/icons/Estelle.jpg",
+      "banner": "img/banner/sky1st.jpg",
+      "banner_offset": [
+        0,
+        0
+      ],
+      "status": {
+        "label": "Em Revisão",
+        "color": "#a78bfa"
+      },
+      "progress": {
+        "translated": 10.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "https://github.com/StarlightTranslate/Traisl-in-the-Sky-1-PT-BR-Download/releases/download/0.5/Trails.in.the.Sky.1.PTBR.zip",
+          "sha256": "",
+          "size": 30.7,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "blue-reflection-quartet",
+      "name": "BLUE REFLECTION Quartet",
+      "description": "BLUE REFLECTION Quartet reúne quatro histórias emocionantes numa só coleção.",
+      "icon": "img/icons/BRQ.png",
+      "banner": "img/banner/BRQ.jpg",
+      "banner_offset": [
+        0,
+        0
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "persona-5-royal",
+      "name": "Persona 5 Royal",
+      "description": "Persona 5 Royal é a edição expandida de Persona 5: de dia você leva a vida de um estudante em Tóquio e, à noite, entra no Metaverso como um Ladrão Fantasma.",
+      "icon": "img/icons/futaba.jpg",
+      "banner": "img/banner/p5.jpg",
+      "banner_offset": [
+        0,
+        10
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 10.0,
+        "reviewed": 0.4
+      },
+      "required_files": [
+        "P5R.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1",
+      "options": [
+        {
+          "id": "codenames",
+          "type": "choice",
+          "label": "Codinomes",
+          "default": "official",
+          "choices": [
+            {
+              "id": "official",
+              "label": "Codinomes Oficiais"
+            },
+            {
+              "id": "classic",
+              "label": "Codinomes Clássicos",
+              "url": "",
+              "sha256": "",
+              "size": 0,
+              "version": "1.0"
+            }
+          ]
+        },
+        {
+          "id": "pt_music",
+          "type": "checkbox",
+          "label": "Música Importante em Português*",
+          "default": false,
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "version": "1.0",
+          "note": "*Marcar isso troca uma música do jogo por uma versão em português feita pelo Anselmo Koch. A música adiciona profundidade à batalha, a decisão é sua."
+        }
+      ]
+    },
+    {
+      "id": "persona-4-golden",
+      "name": "Persona 4 Golden",
+      "description": "Uma história de amadurecimento que coloca o protagonista e seus amigos em uma jornada iniciada por uma série de assassinatos em série.",
+      "icon": "img/icons/P4G.jpg",
+      "banner": "img/banner/P4G.jpeg",
+      "banner_offset": [
+        0,
+        0
+      ],
+      "status": {
+        "label": "Completa",
+        "color": "#2ecc71"
+      },
+      "progress": {
+        "translated": 1.0,
+        "reviewed": 0.8
+      },
+      "required_files": [
+        "p4g.exe",
+        "data.cpk"
+      ],
+      "logo": "img/Phantasie-Translate/logo.png",
+      "credits": {
+        "translation": [
+          "Ahther",
+          "xtremegat",
+          "Trots",
+          "PHSticks",
+          "Relat",
+          "Sakamoto",
+          "Uão",
+          "Piloot",
+          "Jonathan",
+          "Belmont",
+          "Hinrong"
+        ],
+        "design": [
+          "Bruno \"ShadicDzn\" Luiz",
+          "Uão",
+          "Jau",
+          "8Giga"
+        ],
+        "tools": [],
+        "thanks": []
+      },
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "2026.05.31",
+          "url": "https://github.com/Ahtheerr/P4Golden-Phantasie-Translate/releases/download/31%2F05%2F2026/P4GPTBR.zip",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "kingdom-hearts-3",
+      "name": "KINGDOM HEARTS III",
+      "description": "KINGDOM HEARTS III + Re Mind (DLC) encerra um capítulo da série. Viaje para novos e empolgantes mundos da Disney e Pixar e se prepare para o confronto final.",
+      "icon": "img/icons/Sora.jpg",
+      "banner": "img/banner/KH.jpg",
+      "banner_offset": [
+        0,
+        -10
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#2ecc71"
+      },
+      "progress": {
+        "translated": 1.0,
+        "reviewed": 1.0
+      },
+      "required_files": [
+        "KINGDOM HEARTS III/Binaries/Win64/KINGDOM HEARTS III.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "https://drive.google.com/uc?export=download&id=1cnhcE1DSIKxPoheg-j-n9KY-0Ez-6Z0C",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    },
+    {
+      "id": "kingdom-hearts-0-2",
+      "name": "Kingdom Hearts 0.2: Birth by Sleep – A Fragmentary Passage",
+      "description": "Após os acontecimentos de Kingdom Hearts Birth by Sleep, Aqua permanece presa no Reino das Trevas, onde vagou por incontáveis anos em busca de uma saída. Enquanto atravessa os fragmentos distorcidos de mundos consumidos pela escuridão, ela enfrenta criaturas cada vez mais perigosas e memórias de Terra e Ventus, seus amigos que não conseguiu salvar.",
+      "icon": "img/icons/Aqua.jpg",
+      "banner": "img/banner/Aqua-banner.jpg",
+      "banner_offset": [
+        0,
+        -10
+      ],
+      "status": {
+        "label": "Completa",
+        "color": "#2ecc71"
+      },
+      "progress": {
+        "translated": 1.0,
+        "reviewed": 1.0
+      },
+      "required_files": [
+        "KINGDOM HEARTS 0.2 Birth by Sleep/Binaries/Win64/KINGDOM HEARTS 0.2 Birth by Sleep.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "https://drive.google.com/uc?export=download&id=1BjuB3d1IS33LtHHqFm6KgAeMP4eyuUPT",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1"
+    }
+  ]
+}

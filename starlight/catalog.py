@@ -11,7 +11,6 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
@@ -71,7 +70,6 @@ class Game:
     icon: str = ""
     banner: str = ""
     logo: str = ""
-    manifest_url: str = ""
     banner_offset: tuple[int, int] = (0, 0)
     status_label: str = "Em andamento"
     status_color: str = "#e74c3c"
@@ -85,6 +83,7 @@ class Game:
     versions: list[Version] = field(default_factory=list)
     default_version: str = ""
     options: list[Option] = field(default_factory=list)
+    website_slug: str = ""
 
     @property
     def has_credits(self) -> bool:
@@ -220,7 +219,6 @@ def parse(data: dict, source: str = "bundled") -> Catalog:
                 icon=str(g.get("icon") or ""),
                 banner=str(g.get("banner") or ""),
                 logo=str(g.get("logo") or ""),
-                manifest_url=str(g.get("manifest_url") or "").strip(),
                 banner_offset=(int(off[0]), int(off[1])) if len(off) == 2 else (0, 0),
                 status_label=str(st.get("label") or "Em andamento"),
                 status_color=str(st.get("color") or "#e74c3c"),
@@ -234,6 +232,7 @@ def parse(data: dict, source: str = "bundled") -> Catalog:
                 versions=vers,
                 default_version=str(g.get("default_version") or ""),
                 options=_parse_options(g.get("options")),
+                website_slug=str(g.get("website_slug") or "").strip(),
             )
         )
     return Catalog(games=games, updated=str(data.get("updated") or ""), min_installer=str(data.get("min_installer") or ""), source=source)
@@ -248,153 +247,19 @@ def load_bundled() -> Catalog:
     return parse(data, "bundled")
 
 
-def _translation_manifest_cache(game_id: str) -> Path:
-    safe_id = "".join(c if c.isalnum() or c in "-_." else "_" for c in game_id)
-    return paths.cache_dir() / "translation_manifests" / f"{safe_id}.json"
-
-
-def _apply_translation_manifest(game: Game, data: dict) -> bool:
-    """Mescla versões publicadas no manifesto individual deste jogo.
-
-    Formato preferido: {schema, id, name, default_version, versions:[...]},
-    reaproveitando o formato de versões que o catálogo já usa. Também aceita
-    o formato simples legado com version/download_url na raiz.
-    """
-    if not isinstance(data, dict) or int(data.get("schema", 1)) > SUPPORTED_SCHEMA:
-        return False
-    if str(data.get("id") or "") != game.id:
-        return False
-
-    raw_versions = data.get("versions")
-    if not isinstance(raw_versions, list):
-        # Compatibilidade com o exemplo inicial de manifesto de versão única.
-        if data.get("version") and (data.get("download_url") or data.get("url")):
-            raw_versions = [{
-                "id": str(data.get("version_id") or game.default_version or "v1"),
-                "label": str(data.get("label") or "V1"),
-                "version": data.get("version"),
-                "url": data.get("download_url") or data.get("url"),
-                "sha256": data.get("sha256", ""),
-                "size": data.get("size", 0),
-                "notes": data.get("notes", ""),
-                "options": data.get("options"),
-            }]
-        else:
-            return False
-
-    seen: set[str] = set()
-    for raw in raw_versions:
-        if not isinstance(raw, dict):
-            continue
-        vid = str(raw.get("id") or "v1").strip()
-        version_text = str(raw.get("version") or "").strip()
-        url = str(raw.get("url") or raw.get("download_url") or "").strip()
-        if not vid or not version_text or not url.startswith(("https://", "http://")):
-            continue
-        seen.add(vid)
-        version = game.version_by_id(vid)
-        if version is None:
-            version = Version(id=vid, label=str(raw.get("label") or vid), version=version_text)
-            game.versions.append(version)
-        version.label = str(raw.get("label") or version.label or vid)
-        version.version = version_text
-        version.url = url
-        version.sha256 = str(raw.get("sha256") or "").strip().lower()
+def load(url: Optional[str] = None, timeout: float = 8.0) -> Catalog:
+    """remote -> cache -> bundled. Nunca levanta exceção por falta de internet."""
+    url = url or app_config.CATALOG_URL
+    if app_config.is_configured() or url != app_config.CATALOG_URL:
         try:
-            version.size = max(0, int(raw.get("size") or 0))
-        except (TypeError, ValueError):
-            version.size = 0
-        version.notes = str(raw.get("notes") or "")
-        version.available = bool(raw.get("available", True))
-        if "options" in raw:
-            version.options = _parse_options(raw["options"])
-
-    if not seen:
-        return False
-    default_id = str(data.get("default_version") or "").strip()
-    if default_id and game.version_by_id(default_id):
-        game.default_version = default_id
-    elif game.default_version not in seen:
-        game.default_version = next(iter(seen))
-    return True
-
-def _fetch_translation_manifest(game: Game, timeout: float) -> tuple[str, Optional[dict], str]:
-    """Retorna (game_id, manifesto, fonte), usando cache se a rede falhar."""
-    cache_path = _translation_manifest_cache(game.id)
-    if game.manifest_url:
-        try:
-            response = requests.get(
-                game.manifest_url, timeout=timeout,
-                headers={"User-Agent": app_config.USER_AGENT, "Cache-Control": "no-cache"},
-            )
-            response.raise_for_status()
-            data = response.json()
-            if not isinstance(data, dict) or str(data.get("id") or "") != game.id:
-                raise ValueError("O id do manifesto não corresponde ao jogo")
-            cache_path.parent.mkdir(parents=True, exist_ok=True)
-            cache_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-            return game.id, data, "remote"
+            r = requests.get(url, timeout=timeout, headers={"User-Agent": app_config.USER_AGENT, "Cache-Control": "no-cache"})
+            r.raise_for_status()
+            data = r.json()
+            cat = parse(data, "remote")
+            _cache_file().write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+            return cat
         except Exception:
             pass
-    try:
-        data = json.loads(cache_path.read_text(encoding="utf-8"))
-        if isinstance(data, dict) and str(data.get("id") or "") == game.id:
-            return game.id, data, "cache"
-    except (OSError, ValueError):
-        pass
-    return game.id, None, "bundled"
-
-
-def refresh_translation_manifests(cat: Catalog, timeout: float = 5.0) -> Catalog:
-    """Consulta os manifestos individuais configurados no catálogo embutido.
-
-    Os pedidos são paralelos para que vários repositórios indisponíveis não
-    deixem a abertura do programa lenta. Cada manifesto pode ser servido por
-    https://raw.githubusercontent.com/USUARIO/REPO/main/manifest.json.
-    """
-    targets = [g for g in cat.games if g.manifest_url]
-    if not targets:
-        return cat
-    sources: set[str] = set()
-    with ThreadPoolExecutor(max_workers=min(8, len(targets))) as pool:
-        futures = [pool.submit(_fetch_translation_manifest, g, timeout) for g in targets]
-        by_id = {g.id: g for g in targets}
-        for future in as_completed(futures):
-            try:
-                game_id, data, source = future.result()
-                if data is not None and _apply_translation_manifest(by_id[game_id], data):
-                    sources.add(source)
-            except Exception:
-                continue
-    if "remote" in sources:
-        cat.source = "individual-remote"
-    elif "cache" in sources:
-        cat.source = "individual-cache"
-    return cat
-
-
-def load(url: Optional[str] = None, timeout: float = 8.0) -> Catalog:
-    """
-    Sem URL explícita: usa a lista embutida de jogos e consulta o manifesto
-    individual de cada tradução. URL explícita mantém compatibilidade com o
-    formato antigo de catálogo remoto e com os testes de fallback/cache.
-    """
-    if url is None:
-        try:
-            return refresh_translation_manifests(load_bundled(), timeout=min(timeout, 5.0))
-        except Exception:
-            return load_bundled()
-
-    try:
-        r = requests.get(url, timeout=timeout, headers={"User-Agent": app_config.USER_AGENT, "Cache-Control": "no-cache"})
-        r.raise_for_status()
-        data = r.json()
-        cat = parse(data, "remote")
-        _cache_file().parent.mkdir(parents=True, exist_ok=True)
-        _cache_file().write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-        return cat
-    except Exception:
-        pass
     try:
         return parse(json.loads(_cache_file().read_text(encoding="utf-8")), "cache")
     except Exception:

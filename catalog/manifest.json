@@ -61,7 +61,7 @@
         }
       ],
       "default_version": "v1",
-      "manifest_url": ""
+      "website_slug": "atelier-ryza-ever-darkness-the-secret-hideout-dx"
     },
     {
       "id": "atelier-ryza-2",
@@ -95,8 +95,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "atelier-ryza-3",
@@ -130,8 +129,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "atelier-sophie-dx",
@@ -165,8 +163,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "atelier-sophie-2",
@@ -200,8 +197,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "atelier-yumia",
@@ -235,8 +231,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "atelier-marie-remake",
@@ -270,8 +265,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "atelier-resleriana",
@@ -305,8 +299,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "trails-in-the-sky-1st-chapter",
@@ -340,8 +333,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "blue-reflection-quartet",
@@ -375,8 +367,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "persona-5-royal",
@@ -443,8 +434,7 @@
           "version": "1.0",
           "note": "*Marcar isso troca uma música do jogo por uma versão em português feita pelo Anselmo Koch. A música adiciona profundidade à batalha, a decisão é sua."
         }
-      ],
-      "manifest_url": ""
+      ]
     },
     {
       "id": "persona-4-golden",
@@ -503,8 +493,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "kingdom-hearts-3",
@@ -538,8 +527,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     },
     {
       "id": "kingdom-hearts-0-2",
@@ -573,8 +561,7 @@
           "notes": ""
         }
       ],
-      "default_version": "v1",
-      "manifest_url": ""
+      "default_version": "v1"
     }
   ]
 }

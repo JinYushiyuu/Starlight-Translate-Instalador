@@ -10,12 +10,13 @@ from PySide6.QtGui import QColor, QFont, QIcon, QLinearGradient, QPainter, QPain
 from PySide6.QtWidgets import (
     QAbstractItemView, QCheckBox, QComboBox, QDialog, QFrame, QGridLayout, QHBoxLayout, QLabel, QListWidget,
     QListWidgetItem, QMessageBox, QProgressBar, QProgressDialog, QPushButton,
-    QScrollArea, QStyle, QStyledItemDelegate, QVBoxLayout, QWidget,
+    QScrollArea, QSizePolicy, QStyle, QStyledItemDelegate, QVBoxLayout, QWidget,
 )
 
 from .. import __version__, app_config, catalog, installer, selfupdate, shortcut, state
 from ..catalog import Catalog, Game, Option, Version
 from ..download import Downloader, DownloadCancelled, DownloadError, file_sha256
+from ..project_gallery import get_project
 from . import style
 from .dialogs import FindGameDialog, SettingsDialog
 from .tasks import run_task
@@ -473,11 +474,51 @@ class MainWindow(QWidget):
         self.lbl_desc.setWordWrap(True)
         self.lbl_desc.setStyleSheet(f"color: {style.SOFT}; font-size: 13px;")
         il.addWidget(self.lbl_desc)
+
+        # Galeria de capturas de tela traduzidas, carregadas do site.
+        self.gallery_frame = QFrame()
+        self.gallery_frame.setObjectName("projectGallery")
+        self.gallery_frame.setStyleSheet(
+            f"QFrame#projectGallery {{ background: {style.PANEL}; "
+            "border: 1px solid #252a34; border-radius: 6px; }"
+        )
+        gallery_layout = QVBoxLayout(self.gallery_frame)
+        gallery_layout.setContentsMargins(14, 12, 14, 12)
+        gallery_layout.setSpacing(8)
+
+        self.gallery_title = QLabel("IMAGENS DA TRADUÇÃO")
+        self.gallery_title.setStyleSheet(
+            "color: #8c95a5; font-size: 12px; font-weight: 700;"
+        )
+        gallery_layout.addWidget(self.gallery_title)
+
+        # A galeria usa uma grade real, com imagens grandes já visíveis.
+        # A rolagem fica na área principal da página, não dentro da galeria.
+        self.gallery_content = QWidget()
+        self.gallery_grid = QGridLayout(self.gallery_content)
+        self.gallery_grid.setContentsMargins(2, 2, 2, 2)
+        self.gallery_grid.setHorizontalSpacing(14)
+        self.gallery_grid.setVerticalSpacing(14)
+        self.gallery_grid.setColumnStretch(0, 1)
+        self.gallery_grid.setColumnStretch(1, 1)
+        gallery_layout.addWidget(self.gallery_content)
+
+        self.gallery_status = QLabel("Selecione um projeto para ver as imagens.")
+        self.gallery_status.setStyleSheet(
+            f"color: {style.MUTED}; font-size: 11px; border: none;"
+        )
+        gallery_layout.addWidget(self.gallery_status)
+        self.gallery_frame.hide()
+        self._gallery_game_id = ""
+        self._gallery_buttons = []
         self.lbl_logo = QLabel()
         self.lbl_logo.setAlignment(Qt.AlignLeft)
         il.addWidget(self.lbl_logo)
         self.credits = self._build_credits()
         il.addWidget(self.credits)
+        # Último bloco informativo da página: sempre abaixo dos créditos.
+        il.addSpacing(8)
+        il.addWidget(self.gallery_frame)
         il.addStretch(1)
         scroll.setWidget(inner)
         rl.addWidget(scroll, 1)
@@ -670,6 +711,126 @@ class MainWindow(QWidget):
         g = self._current_game
         return g.version_by_id(self._current_version_id) if g else None
 
+    def _clear_gallery(self) -> None:
+        """Remove as miniaturas da seleção anterior."""
+        while self.gallery_grid.count():
+            item = self.gallery_grid.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.hide()
+                widget.setParent(None)
+                widget.deleteLater()
+        self._gallery_buttons.clear()
+
+    def _load_project_gallery(self, game: Game) -> None:
+        """Busca as imagens do projeto sem bloquear a interface."""
+        slug = getattr(game, "website_slug", "")
+        self._gallery_game_id = game.id
+        self._clear_gallery()
+
+        if not slug:
+            self.gallery_frame.hide()
+            return
+
+        self.gallery_frame.show()
+        self.gallery_status.setText("Carregando imagens traduzidas...")
+
+        def work(_emit):
+            project = get_project(slug)
+            if not project:
+                return game.id, []
+
+            from urllib.request import Request, urlopen
+
+            downloaded = []
+            for url in project.get("images", []):
+                try:
+                    request = Request(
+                        url,
+                        headers={"User-Agent": "Starlight-Translate-Instalador/2.0"},
+                    )
+                    with urlopen(request, timeout=10) as response:
+                        data = response.read()
+                    if data:
+                        downloaded.append((url, data))
+                except (OSError, TimeoutError, ValueError):
+                    continue
+            return game.id, downloaded
+
+        def done(result):
+            game_id, images = result
+            # A resposta pode chegar depois que outro jogo já foi selecionado.
+            if game_id != self._gallery_game_id:
+                return
+
+            if not images:
+                self.gallery_status.setText(
+                    "Nenhuma imagem disponível para este projeto."
+                )
+                return
+
+            shown = 0
+            for index, (url, data) in enumerate(images, start=1):
+                pixmap = QPixmap()
+                if not pixmap.loadFromData(data):
+                    continue
+
+                button = QPushButton()
+                button.setMinimumSize(360, 203)
+                button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+                button.setMaximumHeight(225)
+                button.setCursor(Qt.PointingHandCursor)
+                button.setFocusPolicy(Qt.NoFocus)
+                button.setIcon(QIcon(pixmap))
+                button.setIconSize(QSize(344, 193))
+                button.setToolTip(f"Imagem {index} — clique para ampliar")
+                button.setStyleSheet(
+                    "QPushButton { background: #202936; border: 1px solid #343d4b; "
+                    "border-radius: 5px; padding: 4px; } "
+                    f"QPushButton:hover {{ border: 1px solid {style.CYAN}; }}"
+                )
+                button.clicked.connect(
+                    lambda checked=False, image=pixmap: self._show_gallery_image(image)
+                )
+                # Duas colunas: as capturas ficam grandes e visíveis sem clique.
+                grid_index = len(self._gallery_buttons)
+                self.gallery_grid.addWidget(button, grid_index // 2, grid_index % 2)
+                self._gallery_buttons.append(button)
+                shown += 1
+
+            if shown:
+                self.gallery_status.setText(
+                    f"{shown} imagem(ns) traduzida(s) · clique em uma para ampliar"
+                )
+            else:
+                self.gallery_status.setText(
+                    "As imagens foram encontradas, mas não puderam ser abertas."
+                )
+
+        def fail(_error):
+            if self._gallery_game_id == game.id:
+                self.gallery_status.setText(
+                    "Não foi possível carregar as imagens do site."
+                )
+
+        run_task(work, on_done=done, on_fail=fail)
+
+    def _show_gallery_image(self, pixmap: QPixmap) -> None:
+        """Exibe uma captura em tamanho ampliado."""
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Imagem da tradução")
+        dialog.resize(960, 640)
+
+        layout = QVBoxLayout(dialog)
+        preview = QLabel()
+        preview.setAlignment(Qt.AlignCenter)
+        preview.setMinimumSize(320, 220)
+        preview.setPixmap(
+            pixmap.scaled(920, 570, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
+        layout.addWidget(preview)
+        dialog.exec()
+
     def _show_game(self, g: Game) -> None:
         self._current_game = g
         rec = state.get_install(g.id)
@@ -679,6 +840,7 @@ class MainWindow(QWidget):
 
         self.lbl_title.setText(g.name)
         self.lbl_desc.setText(g.description)
+        self._load_project_gallery(g)
         self.banner.tag.setText(g.status_label)
         self.banner.tag.setStyleSheet(f"background: {g.status_color}; color: white; font-size: 12px; font-weight: 700; border-radius: 12px; padding: 5px 12px;")
         self.banner.set_banner(style.load_pixmap(catalog.local_image(g.banner)), g.banner_offset)

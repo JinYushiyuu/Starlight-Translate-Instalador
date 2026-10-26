@@ -21,42 +21,7 @@ Sugestão de dois repositórios:
 - **Starlight-Translate-Catalogo**: contém só o `manifest.json` (copie de `catalog/manifest.json`).
 - **Starlight-Translate-Instalador**: este projeto. Os `.zip` das traduções podem ficar em Releases de qualquer repositório (ou Drive, como hoje).
 
-## 2) Lançar/atualizar uma tradução pelo GitHub Release (automático, sem editar JSON)
-
-Em vez de colar `version`/`url`/`sha256` a cada atualização, aponte a versão do jogo para o
-repositório da tradução. O instalador consulta a **última Release** do repositório ao abrir.
-
-No `catalog/manifest.json` (uma vez só, depois lança uma release do instalador):
-
-```json
-"versions": [
-  { "id": "v1", "label": "V1", "version": "1.0",
-    "github": "JinYushiyuu/Atelier-Ryza-1-PTBR",
-    "github_asset": "Traducao-PTBR.zip" }
-]
-```
-
-- `github`: `dono/repositorio` (o link do repositório também funciona).
-- `github_asset` (recomendado): **nome exato** do `.zip` anexado na Release. Se a Release tiver só um
-  `.zip`, pode omitir; com vários, use esse campo (aceita `*` , ex.: `"*PTBR*.zip"`).
-
-Para **atualizar a tradução**: no repositório dela, **Releases → Draft a new release**, crie uma tag nova
-(`v1.1`), anexe o `.zip` e publique. Pronto: quem abrir o instalador vê **⬆ Atualizar**. Não precisa mexer
-no catálogo nem lançar release do instalador.
-
-Detalhes:
-- A **tag** vira a versão (o `v` inicial some: `v1.1` → `1.1`). Tag diferente da instalada = atualização.
-  Não reaproveite uma tag antiga, senão ninguém recebe.
-- O `.zip` tem o mesmo formato de sempre (arquivos com o caminho relativo à pasta do jogo).
-- O tamanho e o `sha256` vêm da própria Release (o GitHub calcula), então não precisa do `hash_zip.py`.
-- Só vale **Release publicada** (rascunho e "pre-release" são ignorados) e o repositório precisa ser público.
-- A API do GitHub permite 60 consultas/hora por IP sem login. O instalador usa ETag (resposta sem mudança
-  não conta) e, se o limite estourar, usa o redirecionamento de `releases/latest` (por isso o
-  `github_asset` com nome exato é recomendado). Sem internet, usa a última Release vista.
-- Opções com pacote extra (`options`) continuam no `manifest.json`; só a tradução base segue a Release.
-- Pode combinar: versões sem `github` continuam usando `url` fixa do `manifest.json`.
-
-## 2b) Lançar/atualizar uma tradução editando o manifest.json (manual)
+## 2) Lançar/atualizar uma tradução (sem mexer no instalador)
 
 1. Suba o `.zip` (Release do GitHub é o ideal).
 2. `python tools/hash_zip.py Pacote.zip --id v2 --label V2 --version 2.1 --url <link do zip>`

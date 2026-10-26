@@ -1,13 +1,10 @@
-"""Configurações fixas do instalador.
+"""Configurações do Starlight Translate Instalador."""
 
-Cada tradução possui seu próprio repositório e seu próprio manifest.json.
-O catálogo embutido em catalog/manifest.json guarda os metadados dos jogos e
-o endereço do manifesto individual de cada tradução.
-"""
-
+CATALOG_URL = (
+    "https://raw.githubusercontent.com/JinYushiyuu/Starlight-Translate-Catalogo/main/manifest.json"
+)
 INSTALLER_REPO = "JinYushiyuu/Starlight-Translate-Instalador"
 
-# Nomes dos arquivos anexados a cada Release do instalador.
 ASSET_WINDOWS = "Starlight-Translate-Instalador-windows-x64.exe"
 ASSET_LINUX = "Starlight-Translate-Instalador-linux-x86_64"
 
@@ -18,5 +15,8 @@ CREDITS_LINE = "Desenvolvido por Jin_Yushiyuu"
 
 
 def is_configured() -> bool:
-    """Indica se o repositório de atualização do instalador foi configurado."""
-    return bool(INSTALLER_REPO) and "SEU-USUARIO" not in INSTALLER_REPO
+    """Indica se os endereços reais dos repositórios estão configurados."""
+    return (
+        "JinYushiyuu/Starlight-Translate-Catalogo" in CATALOG_URL
+        and INSTALLER_REPO == "JinYushiyuu/Starlight-Translate-Instalador"
+    )

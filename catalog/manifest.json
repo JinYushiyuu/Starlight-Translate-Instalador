@@ -328,7 +328,7 @@
         "reviewed": 0.0
       },
       "required_files": [
-        "*.exe"
+        "*sora_1st.exe"
       ],
       "versions": [
         {

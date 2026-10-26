@@ -6,11 +6,14 @@ nunca baixou nada usa a cópia que vem dentro do próprio instalador.
 """
 from __future__ import annotations
 
+import fnmatch
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote, unquote
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
@@ -31,6 +34,8 @@ class Version:
     notes: str = ""
     available: bool = False
     options: Optional[list[Option]] = None  # None = usa as opções do jogo
+    github: str = ""  # "dono/repositorio": a Release mais recente define version/url/sha256/size
+    github_asset: str = ""  # padrão do nome do .zip da Release (ex.: "*PTBR*.zip"); vazio = o .zip da Release
 
 
 @dataclass
@@ -210,6 +215,8 @@ def parse(data: dict, source: str = "bundled") -> Catalog:
                     notes=str(v.get("notes") or ""),
                     available=bool(url) and bool(v.get("available", True)),
                     options=_parse_options(v["options"]) if "options" in v else None,
+                    github=normalize_github_repo(v.get("github")),
+                    github_asset=str(v.get("github_asset") or "").strip(),
                 )
             )
         off = g.get("banner_offset") or [0, 0]
@@ -375,6 +382,165 @@ def refresh_translation_manifests(cat: Catalog, timeout: float = 5.0) -> Catalog
     return cat
 
 
+# --- versão mais recente direto do GitHub (API de Releases) ------------------- #
+GITHUB_API = "https://api.github.com"
+_GITHUB_REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+
+
+def normalize_github_repo(value) -> str:
+    """Aceita "dono/repo" ou o link do repositório e devolve "dono/repo" ("" se inválido)."""
+    text = str(value or "").strip()
+    text = re.sub(r"^https?://(www\.)?github\.com/", "", text, flags=re.I).strip("/")
+    text = re.sub(r"\.git$", "", text, flags=re.I)
+    text = "/".join(text.split("/")[:2])
+    return text if _GITHUB_REPO_RE.match(text) else ""
+
+
+def _github_cache(repo: str) -> Path:
+    safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in repo)
+    return paths.cache_dir() / "github_releases" / f"{safe}.json"
+
+
+def _read_github_cache(repo: str) -> dict:
+    try:
+        data = json.loads(_github_cache(repo).read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _slim_release(raw: dict) -> dict:
+    return {
+        "tag": str(raw.get("tag_name") or ""),
+        "assets": [
+            {
+                "name": str(a.get("name") or ""),
+                "size": int(a.get("size") or 0),
+                "url": str(a.get("browser_download_url") or ""),
+                "digest": str(a.get("digest") or ""),
+            }
+            for a in raw.get("assets") or []
+            if isinstance(a, dict)
+        ],
+    }
+
+
+def _is_exact_name(pattern: str) -> bool:
+    return bool(pattern) and not any(c in pattern for c in "*?[")
+
+
+def _release_via_web(repo: str, asset_name: str, timeout: float) -> Optional[dict]:
+    """Plano B sem a API (que tem limite de 60 pedidos/hora por IP sem login).
+
+    github.com/dono/repo/releases/latest redireciona para .../releases/tag/<tag>; com o
+    NOME EXATO do .zip (campo github_asset) dá para montar o link de download. Não traz
+    tamanho nem sha256.
+    """
+    try:
+        r = requests.head(
+            f"https://github.com/{repo}/releases/latest",
+            timeout=timeout, allow_redirects=False, headers={"User-Agent": app_config.USER_AGENT},
+        )
+    except requests.RequestException:
+        return None
+    location = r.headers.get("Location", "")
+    if r.status_code not in (301, 302, 303, 307, 308) or "/releases/tag/" not in location:
+        return None
+    tag = unquote(location.split("/releases/tag/", 1)[1].split("?")[0].strip("/"))
+    if not tag:
+        return None
+    url = f"https://github.com/{repo}/releases/download/{quote(tag, safe='')}/{quote(asset_name)}"
+    return {"tag": tag, "assets": [{"name": asset_name, "size": 0, "url": url, "digest": ""}]}
+
+
+def _fetch_github_release(repo: str, timeout: float, asset_hint: str = "") -> tuple[str, Optional[dict], str]:
+    """Última Release publicada de `repo`. Retorna (repo, release, fonte).
+
+    Usa ETag: se nada mudou o GitHub responde 304, que não gasta o limite da API
+    (60 pedidos/hora sem login). Sem rede ou com limite estourado, usa a cópia salva.
+    """
+    cached = _read_github_cache(repo)
+    headers = {
+        "User-Agent": app_config.USER_AGENT,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if cached.get("etag") and cached.get("release"):
+        headers["If-None-Match"] = cached["etag"]
+    try:
+        r = requests.get(f"{GITHUB_API}/repos/{repo}/releases/latest", timeout=timeout, headers=headers)
+        if r.status_code == 304 and cached.get("release"):
+            return repo, cached["release"], "cache"
+        if r.status_code == 200:
+            release = _slim_release(r.json())
+            cache = _github_cache(repo)
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(json.dumps({"etag": r.headers.get("ETag", ""), "release": release}), encoding="utf-8")
+            return repo, release, "remote"
+        if r.status_code == 404:  # repositório ainda não tem nenhuma Release
+            return repo, None, "none"
+        if r.status_code in (403, 429) and _is_exact_name(asset_hint):  # limite da API estourado
+            web = _release_via_web(repo, asset_hint, timeout)
+            if web:
+                return repo, web, "web"
+    except (requests.RequestException, ValueError):
+        pass
+    if cached.get("release"):  # sem rede, limite da API, erro do GitHub...
+        return repo, cached["release"], "cache"
+    return repo, None, "none"
+
+
+def _pick_release_asset(release: dict, pattern: str = "") -> Optional[dict]:
+    zips = [a for a in release.get("assets", []) if a.get("name", "").lower().endswith(".zip") and a.get("url")]
+    if pattern:
+        zips = [a for a in zips if fnmatch.fnmatch(a["name"].lower(), pattern.lower())]
+    return zips[0] if zips else None
+
+
+def _apply_github_release(version: Version, release: dict) -> bool:
+    asset = _pick_release_asset(release, version.github_asset)
+    tag = str(release.get("tag") or "").strip()
+    if not asset or not tag:
+        return False
+    version.version = re.sub(r"^[vV](?=\d)", "", tag)  # tag "v1.2" -> versão "1.2"
+    version.url = asset["url"]
+    version.size = int(asset.get("size") or 0)
+    digest = str(asset.get("digest") or "").lower()
+    version.sha256 = digest[len("sha256:"):] if digest.startswith("sha256:") else ""
+    version.available = True
+    return True
+
+
+def refresh_github_releases(cat: Catalog, timeout: float = 5.0) -> Catalog:
+    """Atualiza version/url/sha256/size das versões que têm `"github": "dono/repo"`.
+
+    Pedidos em paralelo (um por repositório). Falha de um repositório não afeta os outros.
+    """
+    targets = [v for g in cat.games for v in g.versions if v.github]
+    if not targets:
+        return cat
+    repos = sorted({v.github for v in targets})
+    hints = {r: next((v.github_asset for v in targets if v.github == r and _is_exact_name(v.github_asset)), "") for r in repos}
+    releases: dict[str, Optional[dict]] = {}
+    sources: set[str] = set()
+    with ThreadPoolExecutor(max_workers=min(8, len(repos))) as pool:
+        for future in as_completed([pool.submit(_fetch_github_release, r, timeout, hints[r]) for r in repos]):
+            try:
+                repo, release, source = future.result()
+            except Exception:
+                continue
+            releases[repo] = release
+            sources.add(source)
+    applied = False
+    for v in targets:
+        release = releases.get(v.github)
+        if release and _apply_github_release(v, release):
+            applied = True
+    if applied and cat.source == "bundled":
+        cat.source = "github" if sources & {"remote", "web"} else "github-cache"
+    return cat
+
+
 def load(url: Optional[str] = None, timeout: float = 8.0) -> Catalog:
     """
     Sem URL explícita: usa a lista embutida de jogos e consulta o manifesto
@@ -382,10 +548,13 @@ def load(url: Optional[str] = None, timeout: float = 8.0) -> Catalog:
     formato antigo de catálogo remoto e com os testes de fallback/cache.
     """
     if url is None:
-        try:
-            return refresh_translation_manifests(load_bundled(), timeout=min(timeout, 5.0))
-        except Exception:
-            return load_bundled()
+        cat = load_bundled()
+        for refresh in (refresh_translation_manifests, refresh_github_releases):
+            try:
+                cat = refresh(cat, timeout=min(timeout, 5.0))
+            except Exception:
+                continue  # uma fonte com problema não derruba as outras
+        return cat
 
     try:
         r = requests.get(url, timeout=timeout, headers={"User-Agent": app_config.USER_AGENT, "Cache-Control": "no-cache"})

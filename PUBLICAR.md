@@ -18,7 +18,12 @@ O GitHub compila os programas de Windows e Linux de graça. Você só usa o nave
 
 Quem já usa o instalador recebe a versão nova automaticamente.
 
-## Lançar/atualizar uma tradução (não precisa de Release do instalador)
+## Atualizar uma tradução pelo GitHub (automático)
+No `catalog/manifest.json`, na versão do jogo, coloque `"github": "dono/repositorio"` e `"github_asset": "NomeDoArquivo.zip"`
+(uma vez; depois lance uma release do instalador). Para cada atualização da tradução, basta publicar uma
+**Release nova** no repositório dela (tag nova, ex.: `v1.1`, com o `.zip` anexado). Veja o README, seção 2.
+
+## Lançar/atualizar uma tradução editando o manifest.json (manual)
 Edite `manifest.json` no repositório do catálogo (ícone de lápis no GitHub): mude `version`, `url` (e `sha256`/`size`, veja `tools/hash_zip.py`) e salve. Os usuários veem "⬆ Atualizar".
 
 ## Se o Actions falhar

@@ -85,6 +85,7 @@ class Game:
     versions: list[Version] = field(default_factory=list)
     default_version: str = ""
     options: list[Option] = field(default_factory=list)
+    website_slug: str = ""
 
     @property
     def has_credits(self) -> bool:
@@ -234,6 +235,7 @@ def parse(data: dict, source: str = "bundled") -> Catalog:
                 versions=vers,
                 default_version=str(g.get("default_version") or ""),
                 options=_parse_options(g.get("options")),
+                website_slug=str(g.get("website_slug") or "").strip(),
             )
         )
     return Catalog(games=games, updated=str(data.get("updated") or ""), min_installer=str(data.get("min_installer") or ""), source=source)

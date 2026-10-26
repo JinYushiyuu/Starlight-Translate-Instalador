@@ -1,18 +1,23 @@
-"""Janela de atualização automática do instalador (aparece ao abrir).
+"""Janela de atualização automática do instalador (aparece SEMPRE ao abrir).
 
-Verifica se há Release novo; se houver, mostra a imagem da Rise com a barra de
-download, troca o executável e reabre. Se não houver (ou estiver offline), só
-avisa que pode continuar e a tela inicial abre normalmente.
+Mostra a imagem da Rise e a barra enquanto verifica; se houver Release novo,
+baixa, troca o executável e reabre. Sem update (ou offline), avisa e abre a tela
+inicial. Rodando pelo Python (Visual Studio) o código-fonte não pode se
+substituir: a janela aparece igual, mas só informa a versão nova.
+
+Para ver a animação de download sem ter um Release novo, defina a variável de
+ambiente STARLIGHT_UPDATE_DEMO=1 antes de abrir.
 """
 from __future__ import annotations
 
+import os
 from typing import Callable, Optional
 
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication, QLabel, QMessageBox, QProgressBar, QVBoxLayout, QWidget
 
-from .. import app_config, paths, selfupdate
+from .. import __version__, app_config, paths, selfupdate
 from ..download import DownloadCancelled, Downloader
 from . import style
 from .tasks import run_task
@@ -20,7 +25,7 @@ from .tasks import run_task
 # A pasta no repositório está como "intalador-update"; aceita a grafia certa também.
 IMAGE_DIRS = ("img/instalador-update", "img/intalador-update")
 IMAGE_NAMES = ("rise.jpg", "Rise.jpg", "rise.png", "Rise.png")
-SHOW_DELAY_MS = 400  # não pisca a janela quando não há update e a checagem é rápida
+LINGER_MS = 900  # tempo para ler "já está atualizado" antes de abrir o instalador
 
 
 def find_image():
@@ -39,10 +44,14 @@ class UpdateWindow(QWidget):
         self,
         checker: Callable[[], Optional[selfupdate.UpdateInfo]] = selfupdate.check,
         downloader: Optional[Downloader] = None,
+        frozen: Optional[bool] = None,
+        demo: Optional[bool] = None,
     ):
         super().__init__()
         self._checker = checker
         self._dl = downloader or Downloader()
+        self._frozen = paths.is_frozen() if frozen is None else frozen
+        self._demo = (os.environ.get("STARLIGHT_UPDATE_DEMO") == "1") if demo is None else demo
         self._finished = False
         self._downloading = False
         self._bg: Optional[QPixmap] = None
@@ -57,7 +66,7 @@ class UpdateWindow(QWidget):
 
         self.title = QLabel("Verificando atualizações...")
         self.title.setStyleSheet("font-size: 22px; font-weight: 700;")
-        self.status = QLabel("Aguarde um instante")
+        self.status = QLabel(f"Versão atual: v{__version__}")
         self.status.setStyleSheet(f"font-size: 13px; color: {style.SOFT};")
         self.bar = QProgressBar()
         self.bar.setRange(0, 0)  # indeterminada até saber o tamanho
@@ -74,28 +83,60 @@ class UpdateWindow(QWidget):
 
     # -- fluxo ----------------------------------------------------------------- #
     def start(self) -> None:
-        QTimer.singleShot(SHOW_DELAY_MS, self._reveal)
-        run_task(lambda _e: self._checker(), on_done=self._on_checked, on_fail=lambda _e: self._finish())
+        self.show()
+        if self._demo:
+            self._run_demo()
+            return
+        run_task(lambda _e: self._checker(), on_done=self._on_checked, on_fail=lambda _e: self._no_update())
 
-    def _reveal(self) -> None:
-        if not self._finished:
-            self.show()
+    def _no_update(self) -> None:
+        self.title.setText("Instalador atualizado")
+        self.status.setText(f"Você já está na versão mais recente (v{__version__}).")
+        self.bar.setRange(0, 100)
+        self.bar.setValue(100)
+        QTimer.singleShot(LINGER_MS, self._finish)
 
     def _on_checked(self, info: Optional[selfupdate.UpdateInfo]) -> None:
         if info is None:
-            self._finish()
+            self._no_update()
+            return
+        if not self._frozen:
+            # Rodando pelo Python/Visual Studio: não dá para trocar o código-fonte.
+            self.title.setText(f"Nova versão disponível: v{info.version}")
+            self.status.setText("Modo desenvolvimento: só o executável (.exe) se atualiza sozinho.")
+            self.bar.setRange(0, 100)
+            self.bar.setValue(0)
+            QTimer.singleShot(2500, self._finish)
             return
         self._downloading = True
         self.title.setText(f"Atualizando o instalador para a v{info.version}")
         self.status.setText("Baixando a nova versão...")
         self.bar.setRange(0, 100)
         self.bar.setValue(0)
-        self.show()
 
         def work(emit):
             return selfupdate.download_update(info, lambda d, t: emit((d, t)), self._dl)
 
         run_task(work, on_done=self._on_downloaded, on_fail=self._on_failed, on_progress=self._on_progress)
+
+    def _run_demo(self) -> None:
+        """Simula um download para conferir o visual (STARLIGHT_UPDATE_DEMO=1)."""
+        self.title.setText("Atualizando o instalador para a v9.9.9 (demonstração)")
+        self.bar.setRange(0, 100)
+        self._demo_value = 0
+
+        def tick() -> None:
+            self._demo_value += 2
+            self._on_progress((self._demo_value * 410_000, 41_000_000))
+            if self._demo_value >= 100:
+                timer.stop()
+                self.title.setText("Demonstração concluída")
+                self.status.setText("Em um update real o instalador reiniciaria agora.")
+                QTimer.singleShot(1200, self._finish)
+
+        timer = QTimer(self)
+        timer.timeout.connect(tick)
+        timer.start(60)
 
     def _on_progress(self, data) -> None:
         done, total = data

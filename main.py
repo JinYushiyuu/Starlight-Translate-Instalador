@@ -17,8 +17,7 @@ from starlight.ui.updater import UpdateWindow
 
 
 def _should_check_installer_update() -> bool:
-    """Só o executável empacotado se atualiza sozinho (rodando pelo Python não)."""
-    return paths.is_frozen() and bool(state.load_settings().get("check_installer_updates", True))
+    return bool(state.load_settings().get("check_installer_updates", True))
 
 
 def main() -> int:

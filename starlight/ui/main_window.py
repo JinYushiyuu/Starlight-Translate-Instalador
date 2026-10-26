@@ -749,22 +749,14 @@ class MainWindow(QWidget):
                 return game.id, [], project_gallery.LAST_ERROR
             reason = project_gallery.LAST_ERROR
 
-            from urllib.request import Request, urlopen
-
             downloaded = []
             for url in project.get("images", []):
                 try:
-                    request = Request(
-                        url,
-                        headers={"User-Agent": project_gallery.USER_AGENT},
-                    )
-                    with urlopen(request, timeout=10) as response:
-                        data = response.read()
+                    data = project_gallery.download_image(url)
                     if data:
                         downloaded.append((url, data))
                 except Exception as exc:  # noqa: BLE001 - uma imagem ruim não derruba as outras
-                    reason = f"falha ao baixar {url} ({exc})"
-                    continue
+                    reason = f"falha ao baixar {url.rsplit('/', 1)[-1]} ({type(exc).__name__}: {exc})"
             return game.id, downloaded, reason
 
         def done(result):

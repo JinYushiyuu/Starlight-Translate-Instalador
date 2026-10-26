@@ -3,9 +3,9 @@
 import ast
 import json
 import re
-from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urljoin
-from urllib.request import Request, urlopen
+
+import requests
 
 
 SITE_BASE = "https://starlight-translate.com.br/"
@@ -30,24 +30,42 @@ def safe_url(url: str) -> str:
     return quote(url, safe=":/?&=%#+@,;~!$'()*[]")
 
 
+def _headers(accept: str) -> dict:
+    return {"User-Agent": USER_AGENT, "Accept": accept}
+
+
 def _download_data() -> str | None:
-    """Baixa o arquivo dados.js publicado no site."""
-    request = Request(
-        DATA_JS_URL,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "text/javascript, application/javascript, */*",
-        },
-    )
+    """Baixa o arquivo dados.js publicado no site.
+
+    Usa requests (com os certificados do certifi embutidos no executável); o
+    urllib falha em HTTPS dentro do .exe/binário empacotado.
+    """
     global LAST_ERROR
     try:
-        with urlopen(request, timeout=TIMEOUT) as response:
-            return response.read().decode("utf-8-sig")
-    except HTTPError as exc:
-        LAST_ERROR = f"o site respondeu HTTP {exc.code} ao baixar dados.js"
-    except (URLError, TimeoutError, OSError, UnicodeError) as exc:
-        LAST_ERROR = f"não consegui baixar dados.js ({exc})"
+        response = requests.get(
+            DATA_JS_URL,
+            timeout=TIMEOUT,
+            headers={**_headers("text/javascript, application/javascript, */*"), "Cache-Control": "no-cache"},
+        )
+        if response.status_code != 200:
+            LAST_ERROR = f"o site respondeu HTTP {response.status_code} ao baixar dados.js"
+            return None
+        return response.content.decode("utf-8-sig")
+    except requests.RequestException as exc:
+        LAST_ERROR = f"não consegui baixar dados.js ({type(exc).__name__}: {exc})"
+    except UnicodeError as exc:
+        LAST_ERROR = f"dados.js com codificação inesperada ({exc})"
     return None
+
+
+def download_image(url: str) -> bytes:
+    """Baixa uma imagem do site; levanta exceção com o motivo se falhar."""
+    response = requests.get(url, timeout=TIMEOUT, headers=_headers("image/*,*/*"))
+    response.raise_for_status()
+    ctype = response.headers.get("Content-Type", "")
+    if "text/html" in ctype:
+        raise ValueError("o site devolveu uma página HTML no lugar da imagem")
+    return response.content
 
 
 def _decode_js_string(value: str) -> str | None:

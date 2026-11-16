@@ -168,7 +168,8 @@ def test_github_asset_escolhe_o_zip_certo(monkeypatch):
 
 def test_load_completo_mescla_github_e_falha_de_uma_fonte_nao_derruba(monkeypatch):
     bundled = catalog.load_bundled()
-    bundled.game("atelier-ryza-1").default().github = "o/r"
+    v = bundled.game("atelier-ryza-1").default()
+    v.github, v.github_asset = "o/r", ""  # o Ryza real já tem github_asset; aqui o zip falso tem outro nome
     monkeypatch.setattr(catalog, "load_bundled", lambda: bundled)
     monkeypatch.setattr(catalog, "refresh_translation_manifests", lambda *a, **k: 1 / 0)
     monkeypatch.setattr(catalog.requests, "get", lambda *a, **k: Resp(200, release("v5")))

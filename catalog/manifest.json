@@ -50,16 +50,18 @@
         ]
       },
       "versions": [
-        {
-          "id": "v1",
-          "label": "V1",
-          "version": "1.0",
-          "url": "https://drive.google.com/uc?export=download&id=1hzlCKOl4ixSNPN1OPBgCxFVlyHbv4d77",
-          "sha256": "",
-          "size": 0,
-          "notes": ""
-        }
-      ],
+      {
+        "id": "v1",
+        "label": "V1",
+        "version": "1.0",
+        "github": "StarlightTranslate/Atelier-Ryza-1-DX-Download",
+        "github_asset": "Atelier.Ryza.Ever.Darkness.the.Secret.Hideout.zip",
+        "url": "",
+        "sha256": "",
+        "size": 0,
+        "notes": ""
+      }
+    ],
       "default_version": "v1",
       "manifest_url": "",
       "website_slug": "atelier-ryza-ever-darkness-the-secret-hideout-dx"
@@ -161,6 +163,7 @@
           "label": "V1",
           "version": "1.0",
           "url": "",
+          "website_slug": "atelier-sophie-the-alchemist-of-the-mysterious-book-dx",
           "sha256": "",
           "size": 0,
           "notes": ""
@@ -569,6 +572,97 @@
           "label": "V1",
           "version": "1.0",
           "url": "https://drive.google.com/uc?export=download&id=1BjuB3d1IS33LtHHqFm6KgAeMP4eyuUPT",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1",
+      "manifest_url": ""
+    },
+    {
+      "id": "neptunia-rebirth-2",
+      "name": "Hyperdimension Neptunia Re;Birth 2: Sisters Generation",
+      "description": "Gamindustri foi tomada por uma nova ameaça, e as CPUs desapareceram sem deixar rastros! Agora, cabe às suas irmãs mais novas assumirem o protagonismo e salvarem a situação neste JRPG hilário e altamente personalizável!",
+      "icon": "img/icons/nepgear.jpg",
+      "banner": "img/banner/rb2.jpg",
+      "banner_offset": [
+        0,
+        0
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 0.2,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        ".exe"
+      ],
+      "logo": "",
+      "credits": {
+        "translation": [
+          "PegadaDLancha"
+          
+        ],
+        "design": [],
+        "tools": [],
+        "thanks": []
+      },
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "2026.05.31",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1",
+      "manifest_url": ""
+    },
+    {
+      "id": "rune-factory-guardians-of-azuma",
+      "name": "Rune Factory: Guardians of Azuma",
+      "description": "Bem-vindo à nação oriental de Azuma! Nesta nova abordagem de Rune Factory, utilize seus poderes como um Dançarino da Terra para restaurar a região, seu povo e até mesmo seus deuses. Ao longo da jornada, enfrente monstros corrompidos, reconstrua fazendas e vilarejos sazonais e crie laços com os habitantes locais, cada um com sua personalidade única.",
+      "icon": "img/icons/rfg.jpg",
+      "banner": "img/banner/rfg.webp",
+      "banner_offset": [
+        40,
+        60
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "progress": {
+        "translated": 10.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        ".exe"
+      ],
+      "logo": "",
+      "credits": {
+        "translation": [
+          "Lucas Miau",
+          "Jin Yushiyuu"
+          
+        ],
+        "design": [],
+        "tools": [],
+        "thanks": []
+      },
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "2026.05.31",
+          "url": "",
           "sha256": "",
           "size": 0,
           "notes": ""

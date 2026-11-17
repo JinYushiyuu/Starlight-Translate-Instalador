@@ -163,14 +163,14 @@
           "label": "V1",
           "version": "1.0",
           "url": "",
-          "website_slug": "atelier-sophie-the-alchemist-of-the-mysterious-book-dx",
           "sha256": "",
           "size": 0,
           "notes": ""
         }
       ],
       "default_version": "v1",
-      "manifest_url": ""
+      "manifest_url": "",
+      "website_slug": "atelier-sophie-the-alchemist-of-the-mysterious-book-dx"
     },
     {
       "id": "atelier-sophie-2",

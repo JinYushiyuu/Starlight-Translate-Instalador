@@ -755,6 +755,7 @@ class MainWindow(QWidget):
         if not slug:
             slug = {
                 "atelier-ryza-1": "atelier-ryza-ever-darkness-the-secret-hideout-dx",
+                "atelier-sophie-dx": "atelier-sophie-the-alchemist-of-the-mysterious-book-dx",
             }.get(game.id, "")
         self._gallery_game_id = game.id
         self._clear_gallery()

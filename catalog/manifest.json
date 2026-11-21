@@ -155,7 +155,7 @@
         "reviewed": 0.0
       },
       "required_files": [
-        "*.exe"
+        ""
       ],
       "versions": [
         {
@@ -221,6 +221,47 @@
         "label": "Em breve",
         "color": "#3498db"
       },
+      "progress": {
+        "translated": 0.0,
+        "reviewed": 0.0
+      },
+      "required_files": [
+        "*.exe"
+      ],
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1",
+      "manifest_url": ""
+    },
+     {
+      "id": "atelier-karia",
+      "name": "Atelier Karia: The Night Kingdom & the Guide of Memories",
+      "description": "Atelier Karia conta a história de uma aventureira sem memória que enfrenta o seu passado. Novas funcionalidades dão profundidade aos combates e à alquimia, os itens sintetizados têm novas funções na exploração e os ingredientes podem ser consumidos para obter efeitos. ",
+      "icon": "img/icons/atelier-karia.webp",
+      "banner": "img/banner/karia.png",
+      "banner_offset": [
+        0,
+        60
+      ],
+      "status": {
+        "label": "Em breve",
+        "color": "#3498db"
+      },
+      "credits": {
+        "translation": [
+          "Shiro Ysgarmr",
+          "Jin_Yushiyuu"
+        ]
+      }, 
       "progress": {
         "translated": 0.0,
         "reviewed": 0.0
@@ -500,7 +541,7 @@
         {
           "id": "v1",
           "label": "V1",
-          "version": "2026.05.31",
+          "version": "1.0",
           "url": "https://github.com/Ahtheerr/P4Golden-Phantasie-Translate/releases/download/31%2F05%2F2026/P4GPTBR.zip",
           "sha256": "",
           "size": 0,
@@ -581,6 +622,63 @@
       "manifest_url": ""
     },
     {
+      "id": "kingdom-hearts-melody-of-memory",
+      "name": "Kingdom Hearts Melody of Memory", 
+      "description": "KINGDOM HEARTS Melody of Memory é um jogo de ação rítmica que recapitula toda a saga da franquia por meio de suas músicas, além de trazer um capítulo inédito focado na Kairi após os eventos de Kingdom Hearts III.",
+      "icon": "img/icons/kh-melody.jpg",
+      "banner": "img/banner/kh-melody.jpg",
+      "banner_offset": [
+        40,
+        60
+      ],
+      "status": {
+        "label": "Completa",
+        "color": "#2ecc71"
+      },
+      "progress": {
+        "translated": 10.0,
+        "reviewed": 10.0
+      },
+       "required_files": [
+        "KINGDOM HEARTS Melody of Memory.exe",
+        "KINGDOM HEARTS Melody of Memory_Data/*"
+      ],
+      "logo": "",
+      "credits": {
+        "translation": [
+          "Sorinha Phantasie(Phantasie Translate)",
+          "Denis (M.I.L. Traduções)"
+          
+        ],
+        "design": ["Sorinha Phantasie"],
+        "tools": ["Denis (M.I.L. Traduções)"],
+        "thanks": []
+      },
+      "versions": [
+        {
+          "id": "v1",
+          "label": "V1",
+          "version": "1.0",
+          "github": "StarlightTranslate/KINGDOM-HEARTS-Melody-of-Memory",
+          "github_asset": "KHMELOMEMPCPTBR.V1.zip",
+          "url": "",
+          "sha256": "",
+          "size": 0,
+          "notes": ""
+        }
+      ],
+      "default_version": "v1",
+      "manifest_url": "",
+      "gallery_images": [
+        "https://media.phantasietranslate.com.br/site/1c899be5-04a6-4aba-b831-0801ebf9dbe2.avif?r2=20261120",
+        "https://media.phantasietranslate.com.br/site/2ec10f7c-81f6-4adc-b42c-f007561e8a23.avif?r2=20261120",
+        "https://media.phantasietranslate.com.br/site/04535414-13b4-47ac-8e71-bdcff8e307a7.avif?r2=20261120",
+        "https://media.phantasietranslate.com.br/site/246c65d1-5d9a-4a81-a5bc-f689b175a2af.avif?r2=20261120",
+        "https://media.phantasietranslate.com.br/site/8c77f59a-39a3-4465-aae3-526a691edf5a.avif?r2=20261120",
+        "https://media.phantasietranslate.com.br/site/f8b30a71-b76c-472e-9b6f-e155d58b762e.avif?r2=20261120"
+      ]
+    },
+    {
       "id": "neptunia-rebirth-2",
       "name": "Hyperdimension Neptunia Re;Birth 2: Sisters Generation",
       "description": "Gamindustri foi tomada por uma nova ameaça, e as CPUs desapareceram sem deixar rastros! Agora, cabe às suas irmãs mais novas assumirem o protagonismo e salvarem a situação neste JRPG hilário e altamente personalizável!",
@@ -599,7 +697,7 @@
         "reviewed": 0.0
       },
       "required_files": [
-        ".exe"
+        "*.exe"
       ],
       "logo": "",
       "credits": {
@@ -670,60 +768,6 @@
       ],
       "default_version": "v1",
       "manifest_url": ""
-    },
-    {
-      "id": "kingdom-hearts-melody-of-memory",
-      "name": "Kingdom Hearts Melody of Memory", 
-      "description": "KINGDOM HEARTS Melody of Memory é um jogo de ação rítmica que recapitula toda a saga da franquia por meio de suas músicas, além de trazer um capítulo inédito focado na Kairi após os eventos de Kingdom Hearts III.",
-      "icon": "img/icons/kh-melody.jpg",
-      "banner": "img/banner/kh-melody.jpg",
-      "banner_offset": [
-        40,
-        60
-      ],
-      "status": {
-        "label": "Traduzido",
-        "color": "#31d135"
-      },
-      "progress": {
-        "translated": 10.0,
-        "reviewed": 10.0
-      },
-      "required_files": [
-        ".exe"
-      ],
-      "logo": "",
-      "credits": {
-        "translation": [
-          "Sorinha Phantasie(Phantasie Translate)",
-          "Denis (M.I.L. Traduções)"
-          
-        ],
-        "design": ["Sorinha Phantasie"],
-        "tools": ["Denis (M.I.L. Traduções)"],
-        "thanks": []
-      },
-      "versions": [
-        {
-          "id": "v1",
-          "label": "V1",
-          "version": "1.0",
-          "url": "",
-          "sha256": "",
-          "size": 0,
-          "notes": ""
-        }
-      ],
-      "default_version": "v1",
-      "manifest_url": "",
-      "gallery_images": [
-        "https://media.phantasietranslate.com.br/site/1c899be5-04a6-4aba-b831-0801ebf9dbe2.avif?r2=20261120",
-        "https://media.phantasietranslate.com.br/site/2ec10f7c-81f6-4adc-b42c-f007561e8a23.avif?r2=20261120",
-        "https://media.phantasietranslate.com.br/site/04535414-13b4-47ac-8e71-bdcff8e307a7.avif?r2=20261120",
-        "https://media.phantasietranslate.com.br/site/246c65d1-5d9a-4a81-a5bc-f689b175a2af.avif?r2=20261120",
-        "https://media.phantasietranslate.com.br/site/8c77f59a-39a3-4465-aae3-526a691edf5a.avif?r2=20261120",
-        "https://media.phantasietranslate.com.br/site/f8b30a71-b76c-472e-9b6f-e155d58b762e.avif?r2=20261120"
-      ]
     }
   ]
 }

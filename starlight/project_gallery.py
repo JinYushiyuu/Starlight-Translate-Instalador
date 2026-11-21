@@ -238,3 +238,21 @@ def get_project(slug: str) -> dict | None:
         "images": [safe_url(urljoin(SITE_BASE, image)) for image in images if image.strip()],
         "youtube_url": _extract_string_property(project_source, "youtubeUrl"),
     }
+
+
+def to_png_bytes(data: bytes) -> bytes | None:
+    """Converte uma imagem que o Qt não abre (ex.: AVIF) para PNG, via Pillow."""
+    try:
+        import io
+
+        from PIL import Image
+
+        with Image.open(io.BytesIO(data)) as image:
+            image.load()
+            if image.mode not in ("RGB", "RGBA"):
+                image = image.convert("RGBA" if "A" in image.getbands() else "RGB")
+            out = io.BytesIO()
+            image.save(out, "PNG")
+            return out.getvalue()
+    except Exception:  # noqa: BLE001 - formato desconhecido ou Pillow sem suporte
+        return None

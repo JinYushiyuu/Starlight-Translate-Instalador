@@ -92,6 +92,7 @@ class Game:
     default_version: str = ""
     options: list[Option] = field(default_factory=list)
     website_slug: str = ""
+    gallery_images: list[str] = field(default_factory=list)  # URLs diretas (ex.: site parceiro)
 
     @property
     def has_credits(self) -> bool:
@@ -245,6 +246,7 @@ def parse(data: dict, source: str = "bundled") -> Catalog:
                 default_version=str(g.get("default_version") or ""),
                 options=_parse_options(g.get("options")),
                 website_slug=str(g.get("website_slug") or "").strip(),
+                gallery_images=[str(x).strip() for x in (g.get("gallery_images") or []) if str(x).strip()],
             )
         )
     return Catalog(games=games, updated=str(data.get("updated") or ""), min_installer=str(data.get("min_installer") or ""), source=source)

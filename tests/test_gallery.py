@@ -61,3 +61,46 @@ def test_imagem_html_nao_e_aceita(monkeypatch):
         assert "HTML" in str(exc)
     else:
         raise AssertionError("deveria recusar HTML")
+
+
+def test_catalogo_le_gallery_images():
+    from starlight import catalog
+
+    data = {"games": [{
+        "id": "kh", "name": "KH",
+        "gallery_images": [" https://media.phantasietranslate.com.br/site/a.webp ", "", "https://x/b.webp"],
+        "versions": [{"id": "v1", "label": "V1", "version": "1.0"}],
+    }]}
+    games = catalog.parse(data, "teste").games
+    assert games[0].gallery_images == [
+        "https://media.phantasietranslate.com.br/site/a.webp",
+        "https://x/b.webp",
+    ]
+
+
+def test_avif_e_convertido_para_png():
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (32, 18), (10, 120, 200)).save(buf, "AVIF")
+    png = pg.to_png_bytes(buf.getvalue())
+    assert png and png[:8] == b"\x89PNG\r\n\x1a\n"
+    assert pg.to_png_bytes(b"lixo") is None
+
+
+def test_qt_carrega_o_png_convertido_do_avif():
+    import io
+
+    from PIL import Image
+    from PySide6.QtGui import QPixmap
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance() or QApplication([])
+    buf = io.BytesIO()
+    Image.new("RGB", (32, 18), (10, 120, 200)).save(buf, "AVIF")
+    assert not QPixmap().loadFromData(buf.getvalue())  # Qt sozinho não abre AVIF
+    pix = QPixmap()
+    assert pix.loadFromData(pg.to_png_bytes(buf.getvalue())) and pix.width() == 32
+    assert app is not None

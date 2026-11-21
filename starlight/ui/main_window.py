@@ -757,10 +757,17 @@ class MainWindow(QWidget):
                 "atelier-ryza-1": "atelier-ryza-ever-darkness-the-secret-hideout-dx",
                 "atelier-sophie-dx": "atelier-sophie-the-alchemist-of-the-mysterious-book-dx",
             }.get(game.id, "")
+        # Imagens hospedadas fora do site da Starlight (ex.: Phantasie Translate):
+        # o manifest traz as URLs diretas em "gallery_images".
+        direct_urls = [
+            project_gallery.safe_url(u)
+            for u in (getattr(game, "gallery_images", None) or [])
+            if str(u).strip().lower().startswith(("http://", "https://"))
+        ]
         self._gallery_game_id = game.id
         self._clear_gallery()
 
-        if not slug:
+        if not slug and not direct_urls:
             self.gallery_frame.hide()
             return
 
@@ -768,13 +775,16 @@ class MainWindow(QWidget):
         self.gallery_status.setText("Carregando imagens traduzidas...")
 
         def work(_emit):
-            project = get_project(slug)
-            if not project:
-                return game.id, [], project_gallery.LAST_ERROR
-            reason = project_gallery.LAST_ERROR
+            if direct_urls:
+                urls, reason = direct_urls, ""
+            else:
+                project = get_project(slug)
+                if not project:
+                    return game.id, [], project_gallery.LAST_ERROR
+                urls, reason = project.get("images", []), project_gallery.LAST_ERROR
 
             downloaded = []
-            for url in project.get("images", []):
+            for url in urls:
                 try:
                     data = project_gallery.download_image(url)
                     if data:
@@ -800,7 +810,10 @@ class MainWindow(QWidget):
             for index, (url, data) in enumerate(images, start=1):
                 pixmap = QPixmap()
                 if not pixmap.loadFromData(data):
-                    continue
+                    # O Qt não abre AVIF (formato do site da Phantasie): converte.
+                    png = project_gallery.to_png_bytes(data)
+                    if not png or not pixmap.loadFromData(png):
+                        continue
 
                 button = QPushButton()
                 button.setMinimumSize(360, 203)
